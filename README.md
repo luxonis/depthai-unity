@@ -6,12 +6,12 @@
 <img src="https://img.shields.io/badge/unity-2020.3.20f1-green.svg?style=flat-square" alt="unity 2020.3.20f1">
 &nbsp;
 
-> `OAK For Unity` is in active development. Its features and API are subject to significant change as development progresses. For beta testing checkout beta branch.
+> `OAK For Unity` is in active development. Its features and API are subject to significant change as development progresses. For beta testing checkout `beta` branch.
 
 
 This repository contains everything you need to integrate OAK with Unity.
-- depthai-unity C/C++ library (source code and precompiled binaries)
 - Unity projects and examples
+- depthai-unity C/C++ library (source code and precompiled binaries)
 - .unitypackage to easy import OAK For Unity into your project (Coming soon)
 ---
 Help build the roadmap checking out our **[Roadmap discussion](https://github.com/luxonis/depthai-unity/issues/1)** and feel free to explain about your use case.
@@ -21,7 +21,7 @@ Help build the roadmap checking out our **[Roadmap discussion](https://github.co
 
 **[Quick Installation Instructions]()**
 
-Get your local workspace up and running quickly. 
+Get your local workspace up and running quickly (less than 30 secs) 
 
 **[OAK For Unity](OAKForUnity/README.md)**
 
@@ -30,6 +30,8 @@ Everything related to OAK For Unity package, projects and demo scenes.
 This repo contains precompiled versions of depthai-unity library lowering any entry barrier, so you don't need to deal with C/C++ compilation.
 
 Do you need to update depthai-unity? Do you want to integrate your own pipeline using depthai-unity library? We got you covered on the following sections.
+
+## Building depthai-unity (OPTIONAL)
 
 **[Building depthai-unity library]()**
 
@@ -56,14 +58,21 @@ If you run into any other problems with the OAK For Unity or have a specific fea
 - Integration with Unity Perception package ([Coming soon](https://github.com/luxonis/depthai-unity))
 - Integration with Unity Robotics package ([Coming soon](https://github.com/luxonis/depthai-unity))
 
+## Compatibility
+
+|Platform|Unity|Render Pipeline|
+|---|---|---|
+|Win10|2020.3.20f1|ALL|
+|MacOS 10.4|2020.3.20f1|ALL|
+|Linux Ubuntu 16.04|2020.3.20f1|ALL
+
 ## Known issues
 If you just use the precompiled depthai-unity library inside Unity, be sure you're using latest version.
 
-
 ## Related links
-- [Discord]()
-- [Unity forum]()
-- [Youtube playlist]()
+- [Discord](https://discord.gg/4hGT3AFPMZ)
+- [Unity forum](https://forum.unity.com/threads/oak-for-unity-spatial-ai-meets-the-power-of-unity.1205764/)
+- [Youtube playlist](https://youtu.be/CSFOZLBV2RA?list=PLFzqMMJPSNSbsHp7QeJpOHrZu_1BAdDms)
 
 ## License
 OAK For Unity is licensed under MIT License. See [LICENSE](LICENSE.md) for the full license text.
