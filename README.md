@@ -5,7 +5,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)&nbsp;
 <img src="https://img.shields.io/badge/unity-2020.3.20f1-green.svg?style=flat-square" alt="unity 2020.3.20f1">
 &nbsp;
-
+<img src="https://img.shields.io/badge/unity-2021.2.7f1-green.svg?style=flat-square" alt="unity 2021.2.7f1">
+&nbsp;
+<img src="https://img.shields.io/badge/unity-URP-green.svg?style=flat-square" alt="unity URP">
+&nbsp;
+<img src="https://img.shields.io/badge/unity-HDRP-green.svg?style=flat-square" alt="unity HDRP">
+&nbsp;
+<img src="https://img.shields.io/badge/unity-Builtin-green.svg?style=flat-square" alt="unity Builtin">
+&nbsp;
 > `OAK For Unity` is in active development. Its features and API are subject to significant change as development progresses. For beta testing checkout `beta` branch.
 
 
@@ -16,6 +23,12 @@ This repository contains everything you need to integrate OAK with Unity.
 ---
 Help build the roadmap checking out our **[Roadmap discussion](https://github.com/luxonis/depthai-unity/issues/1)** and feel free to explain about your use case.
 ---
+
+---
+## **Development status and Compatibility**
+**[Roadmap development status]()**
+
+During beta process we'll prioritize Windows10 platform as main platform for Unity developers closing features with support for MacOS and Linux.
 
 ## Getting started
 
@@ -62,9 +75,9 @@ If you run into any other problems with the OAK For Unity or have a specific fea
 
 |Platform|Unity|Render Pipeline|
 |---|---|---|
-|Win10|2020.3.20f1|ALL|
-|MacOS 10.4|2020.3.20f1|ALL|
-|Linux Ubuntu 16.04|2020.3.20f1|ALL
+|Win10|2021.2.7f1|ALL|
+|MacOS|Coming Soon|ALL|
+|Linux Ubuntu|Coming Soon|ALL
 
 ## Known issues
 If you just use the precompiled depthai-unity library inside Unity, be sure you're using latest version.

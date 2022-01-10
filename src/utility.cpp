@@ -117,3 +117,14 @@ cv::Mat resizeKeepAspectRatio(const cv::Mat &input, const cv::Size &dstSize, con
     return output;
 }
 
+void toARGB(const cv::Mat &input, void *ptr )
+{
+    cv::Mat argb_img;
+    cv::cvtColor(input, argb_img, cv::COLOR_RGB2BGRA);
+    std::vector<cv::Mat> bgra;
+    cv::split(argb_img, bgra);
+    std::swap(bgra[0], bgra[3]);
+    std::swap(bgra[1], bgra[2]);
+    
+    std::memcpy(ptr, argb_img.data, argb_img.total() * argb_img.elemSize());
+}
