@@ -920,8 +920,8 @@ MonoBehaviour:
   recordResults: 0
   pathToRecord: 
   replayResults: 0
-  pathToReplay: 
-  replayNumFrames: 0
+  pathToReplay: PointCloudVFX
+  replayNumFrames: 263
   replayFPS: 30
   replayInLoop: 1
   textures: []
