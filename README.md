@@ -1,6 +1,11 @@
 # OAK For Unity
 
-![Demo](docs/img/depthai-unity-plugin-face-detector.gif)
+<p align="center">
+  <img src="docs/img/depthai-unity-plugin-face-detector.gif" width="50%" />
+  &nbsp; &nbsp;
+  <img src="docs/img/point_cloud_vfx2.gif" width="47%" />
+  &nbsp; &nbsp;
+  <br>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)&nbsp;
 <img src="https://img.shields.io/badge/unity-2020.3.20f1-green.svg?style=flat-square" alt="unity 2020.3.20f1">
@@ -23,12 +28,6 @@ This repository contains everything you need to integrate OAK with Unity.
 ---
 Help build the roadmap checking out our **[Roadmap discussion](https://github.com/luxonis/depthai-unity/issues/1)** and feel free to explain about your use case.
 ---
-
----
-## **Development status and Compatibility**
-**[Roadmap development status]()**
-
-During beta process we'll prioritize Windows10 platform as main platform for Unity developers closing features with support for MacOS and Linux.
 
 ## Getting started
 
