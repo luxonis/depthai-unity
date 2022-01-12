@@ -31,7 +31,7 @@ Help build the roadmap checking out our **[Roadmap discussion](https://github.co
 
 ## Getting started
 
-**[Quick Installation Instructions]()**
+**[Quick Installation Instructions](docs/Quick_install.md)**
 
 Get your local workspace up and running quickly (less than 30 secs) 
 

@@ -1,8 +1,14 @@
 # Quick installation instructions
 
-## Prerequisites
+## Requirements
 ### Windows 10
-If you're in Windows 10 you don't need to install anything special to have OAK device up and running.
+-  Clone the repository to location on your local machine
+    ```shell
+    git clone https://github.com/luxonis/depthai-unity.git
+    ````
+- Unity 2021.2.7f
+
+- If you're in Windows 10 you don't need to install anything special to have OAK device up and running.
 
 ### MacOS (Coming Soon)
 
