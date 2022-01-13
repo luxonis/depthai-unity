@@ -61,7 +61,11 @@ Everything related to OAK For Unity package, projects and demo scenes.
 
 This repo contains precompiled versions of depthai-unity library lowering any entry barrier, so you don't need to deal with C/C++ compilation.
 
-Do you need to update depthai-unity? Do you want to integrate your own pipeline using depthai-unity library? We got you covered on the following sections.
+**[Prebuild Unity demos](prebuild_demos/README.md)**
+
+Do you want to try some of our demos?
+
+Do you need to update depthai-unity? Do you want to integrate your own pipeline using depthai-unity library? We got you covered on the following section.
 
 ## Building depthai-unity (OPTIONAL)
 
