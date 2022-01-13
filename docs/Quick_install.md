@@ -26,7 +26,7 @@
   ```
 - OpenCV 4.5
   ```shell
-  brew install opencv@4.5.4
+  brew install opencv@4
   ```
 
 ### Linux
