@@ -16,7 +16,7 @@ namespace OAKForUnity
     {
         //Lets make our calls from the Plugin
         [DllImport("depthai-unity", CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool InitPointCloudVFX(PipelineConfig config);
+        private static extern bool InitPointCloudVFX(in PipelineConfig config);
 
         [DllImport("depthai-unity", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr PointCloudVFXResults(out FrameInfo frameInfo, bool getPreview, bool useDepth,

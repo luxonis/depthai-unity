@@ -21,7 +21,7 @@ namespace OAKForUnity
         * @param config pipeline configuration 
         * @returns pipeline 
         */
-        private static extern bool InitStreams(PipelineConfig config);
+        private static extern bool InitStreams(in PipelineConfig config);
 
         [DllImport("depthai-unity", CallingConvention = CallingConvention.Cdecl)]
         /*
