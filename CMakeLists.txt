@@ -35,6 +35,8 @@ find_package(FP16 REQUIRED)
 add_library(${TARGET_NAME}
     src/utility.cpp
     src/device/DeviceManager.cpp
+    src/device/Streams.cpp
+    src/device/PointCloudVFX.cpp
 )
 
 # Add include directories
