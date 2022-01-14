@@ -21,6 +21,8 @@
 
 > `OAK For Unity` is in active development. Its features and API are subject to significant change as development progresses. For beta testing checkout `beta` branch.
 
+## Current status: Device manager, basic streams and point cloud for WINDOWS. Working on rest platforms (MacOS/Linux)
+
 **[What is OAK For Unity? (Click here for more detail)](docs/What_is.md)**
 
 OAK For Unity is native plugin for Windows, Linux and MacOS (Android support ongoing) to enable OAK devices and capabilities inside Unity.
@@ -101,7 +103,7 @@ If you run into any other problems with the OAK For Unity or have a specific fea
 | Platform     | Unity       | Render Pipeline |
 | ------------ | ----------- | --------------- |
 | Win10        | 2021.2.7f1  | ALL             |
-| MacOS        | 2021.2.7f1  | ALL             |
+| MacOS        | Coming soon | ALL             |
 | Linux Ubuntu | Coming Soon | ALL             |
 
 ## Known issues
