@@ -21,7 +21,7 @@
 
 > `OAK For Unity` is in active development. Its features and API are subject to significant change as development progresses. For beta testing checkout `beta` branch.
 
-## Current status: Device manager, basic streams and point cloud for WINDOWS. Working on rest platforms (MacOS/Linux)
+## Current status: Device manager, basic streams and point cloud for WINDOWS. Working prebuild unity lib distribution for MacOS and Linux. If you look support for MacOS and Linux you can build the unity library. Check `Building depthai-unity library` section below
 
 **[What is OAK For Unity? (Click here for more detail)](docs/What_is.md)**
 
