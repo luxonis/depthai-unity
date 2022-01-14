@@ -21,7 +21,7 @@
 
 > `OAK For Unity` is in active development. Its features and API are subject to significant change as development progresses. For beta testing checkout `beta` branch.
 
-## Current status: Device manager, basic streams and point cloud for WINDOWS. Working prebuild unity lib distribution for MacOS and Linux. If you look support for MacOS and Linux you can build the unity library. Check `Building depthai-unity library` section below
+## Current status: Device manager, basic streams and point cloud for WINDOWS. Working prebuild unity lib distribution for MacOS. If you look support for MacOS you can build the unity library. Check `Building depthai-unity library` section below.
 
 **[What is OAK For Unity? (Click here for more detail)](docs/What_is.md)**
 
@@ -71,7 +71,7 @@ Do you need to update depthai-unity? Do you want to integrate your own pipeline 
 
 ## Building depthai-unity (OPTIONAL)
 
-**[Building depthai-unity library - Coming soon]()**
+**[Building depthai-unity library](docs/Build_unity_lib.md)**
 
 Detailed instructions covering all steps to build depthai-unity C/C++ library (based on depthai-core C++ library) for all the platforms
 
