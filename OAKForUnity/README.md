@@ -1,6 +1,11 @@
 # OAK For Unity - Unity Project
 
-![Demo](../docs/img/depthai-unity-plugin-face-detector.gif)
+<p align="center">
+  <img src="../docs/img/oak_playground.gif" width="47%" />
+  &nbsp; &nbsp;
+  <img src="../docs/img/depthai-unity-plugin-face-detector.gif" width="50%" />
+  &nbsp; &nbsp;
+  <br>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)&nbsp;
 <img src="https://img.shields.io/badge/unity-2020.3.20f1-green.svg?style=flat-square" alt="unity 2020.3.20f1">

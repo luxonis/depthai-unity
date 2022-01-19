@@ -1,9 +1,9 @@
 # OAK For Unity
 
 <p align="center">
-  <img src="docs/img/depthai-unity-plugin-face-detector.gif" width="50%" />
+  <img src="docs/img/oak_playground.gif" width="47%" />
   &nbsp; &nbsp;
-  <img src="docs/img/point_cloud_vfx2.gif" width="47%" />
+  <img src="docs/img/depthai-unity-plugin-face-detector.gif" width="50%" />
   &nbsp; &nbsp;
   <br>
 
@@ -21,7 +21,11 @@
 
 > `OAK For Unity` is in active development. Its features and API are subject to significant change as development progresses. For beta testing checkout `beta` branch.
 
-## Current status: Device manager, basic streams and point cloud for WINDOWS. Working on rest platforms (MacOS/Linux)
+## Current status: 
+2022-01-19: Demo menu scene added. Now it's much easier to navigate throught the demos. Go to menu on top: "OAK For Unity"->"Example scenes" and hit play
+<details><summary>Expand to read more ...</summary>
+2022-01-14: Device manager, basic streams and point cloud for WINDOWS. Working on rest platforms (MacOS/Linux)
+</details>
 
 **[What is OAK For Unity? (Click here for more detail)](docs/What_is.md)**
 
