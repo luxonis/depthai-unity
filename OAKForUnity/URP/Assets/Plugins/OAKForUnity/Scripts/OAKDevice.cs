@@ -163,6 +163,28 @@ namespace OAKForUnity
         }
 
         /*
+         * Close device in separate thread.
+         * Not common case for single scene but useful for playground demo menu
+         * or just in case to close device without freezing UI thread.
+         */
+        public void FinishDeviceThread()
+        {
+            if (pipelines.Count == 0) Debug.LogError("No pipeline defined.");
+            else
+            {
+                pipelines[0].FinishDeviceThread();
+            }
+        }
+
+        /*
+         * True if device is running, false otherwise.
+         */
+        public bool IsDeviceRunning()
+        {
+            return pipelines[0].deviceRunning;
+        }
+
+        /*
          * Start replay if there is replay data
          */
         public void StartReplay()

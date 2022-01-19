@@ -3,6 +3,7 @@
  * like multithread support, initialization and replay
  */
 
+using System.Collections;
 using UnityEngine;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -169,6 +170,9 @@ namespace OAKForUnity
         private Thread _worker;
         private readonly AutoResetEvent _stopEvent = new AutoResetEvent(false);
 
+        // Thread to finish device
+        private Thread _finishDeviceWorker;
+        
         // Pipeline configuration and FrameInfo objects
         public PipelineConfig config;
         public FrameInfo frameInfo;
@@ -297,11 +301,35 @@ namespace OAKForUnity
             }
         }
 
+        /*
+         * Finish device in separate thread.
+         */
+        private void FinishDeviceWorker()
+        {
+            DAICloseDevice((int)device.deviceNum);
+            deviceRunning = false;
+        }
+        public void FinishDeviceThread()
+        {
+            if (processMode == ProcessMode.Multithread)
+            {
+                if (_worker != null)
+                {
+                    _stopEvent.Set();
+                    _worker.Join();
+                }
+            }
+
+            // Start worker to finish device
+            _finishDeviceWorker = new Thread(FinishDeviceWorker);
+            _finishDeviceWorker.Start();
+        }
+        
         void OnApplicationQuit()
         {
             FinishDevice();
         }
-
+        
         // Update is called once per frame
         // For unity thread mode
         void Update()

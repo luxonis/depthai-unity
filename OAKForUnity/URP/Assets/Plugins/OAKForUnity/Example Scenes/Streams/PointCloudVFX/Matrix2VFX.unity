@@ -929,7 +929,7 @@ GameObject:
   - component: {fileID: 1687573506}
   m_Layer: 0
   m_Name: OAK Device
-  m_TagString: Untagged
+  m_TagString: OAKDevice
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
