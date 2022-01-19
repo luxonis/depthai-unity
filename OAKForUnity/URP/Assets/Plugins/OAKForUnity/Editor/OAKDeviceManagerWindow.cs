@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Runtime.InteropServices;
 using SimpleJSON;
+using UnityEditor.SceneManagement;
 
 namespace OAKForUnity
 {
@@ -18,6 +19,12 @@ namespace OAKForUnity
         private string _devicesJson = "";
         private string _devices = "";
 
+        [MenuItem("OAK For Unity/Example Scenes")]
+        public static void ExampleScenes()
+        {
+            EditorSceneManager.OpenScene("Assets/Plugins/OAKForUnity/Example Scenes/Playground.unity");
+        }
+        
         [MenuItem("OAK For Unity/OAK Device Manager")]
         public static void ShowWindow()
         {
