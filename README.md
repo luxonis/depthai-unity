@@ -107,7 +107,8 @@ If you run into any other problems with the OAK For Unity or have a specific fea
 
 | Platform     | Unity       | Render Pipeline |
 | ------------ | ----------- | --------------- |
-| Win10        | 2021.2.7f1  | ALL             |
+| Win11        | 2021.2.8f1  | ALL             |
+| Win10        | 2021.2.8f1  | ALL             |
 | MacOS        | Coming soon | ALL             |
 | Linux Ubuntu | Coming Soon | ALL             |
 
