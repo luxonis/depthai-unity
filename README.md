@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)&nbsp;
 <img src="https://img.shields.io/badge/unity-2020.3.20f1-green.svg?style=flat-square" alt="unity 2020.3.20f1">
 &nbsp;
-<img src="https://img.shields.io/badge/unity-2021.2.7f1-green.svg?style=flat-square" alt="unity 2021.2.7f1">
+<img src="https://img.shields.io/badge/unity-2021.2.8f1-green.svg?style=flat-square" alt="unity 2021.2.7f1">
 &nbsp;
 <img src="https://img.shields.io/badge/unity-URP-green.svg?style=flat-square" alt="unity URP">
 &nbsp;
