@@ -3,6 +3,7 @@
  * like multithread support, initialization and replay
  */
 
+using System;
 using System.Collections;
 using UnityEngine;
 using System.Runtime.InteropServices;
@@ -173,6 +174,9 @@ namespace OAKForUnity
         // Thread to finish device
         private Thread _finishDeviceWorker;
         
+        // Path for models
+        protected String _dataPath;
+        
         // Pipeline configuration and FrameInfo objects
         public PipelineConfig config;
         public FrameInfo frameInfo;
@@ -233,7 +237,10 @@ namespace OAKForUnity
         * Could be called from start pipeline button on canvas ui (p.eg)
         */
         public void ConnectDevice()
-        { 
+        {
+            // Set dataPath for loading NN model if need it
+            _dataPath = Application.dataPath;
+            
             // if multithread worker is in charge to start pipeline and get results
             if (processMode == ProcessMode.Multithread)
             {
@@ -329,7 +336,7 @@ namespace OAKForUnity
         {
             FinishDevice();
         }
-        
+
         // Update is called once per frame
         // For unity thread mode
         void Update()
