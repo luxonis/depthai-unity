@@ -16,10 +16,12 @@ In Unity Hub main screen:
 
 Demo scenes starts OAK device automatically
 
-## OAK Device Manager
+## Playground and OAK Device Manager
+
+OAK Playground is the main menu to navigate through the demos.
+`Main menu` > `OAK For Unity` > `Example scenes` 
 
 OAK Device manager shows how many OAK devices are connected and state.
-
 `Main menu` > `OAK For Unity` > `Device Manager` opens floating window you can arrange anywhere as any Unity window.
 
 Cick on `Check devices`
@@ -37,4 +39,6 @@ Demo scenes are located under `Plugins\OAKForUnity\Example Scenes` folder
 ### Point cloud visualization
 
 ### Point cloud VFX
+
+### Face Detector
 

@@ -37,6 +37,8 @@ add_library(${TARGET_NAME}
     src/device/DeviceManager.cpp
     src/device/Streams.cpp
     src/device/PointCloudVFX.cpp
+    src/predefined/FaceDetector.cpp
+    src/Depth.cpp
 )
 
 # Add include directories

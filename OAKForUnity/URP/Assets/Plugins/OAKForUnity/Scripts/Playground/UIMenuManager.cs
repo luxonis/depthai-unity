@@ -73,7 +73,7 @@ namespace OAKForUnity
             bool atLeastOneDeviceRunning = false;
             int attempts = 0;
 
-            while (!atLeastOneDeviceRunning || attempts > 5)
+            while (!atLeastOneDeviceRunning || attempts > 25)
             {
                 foreach (GameObject OAKDevice in OAKDevices)
                 {

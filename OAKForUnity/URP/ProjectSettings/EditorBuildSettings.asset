@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Plugins/OAKForUnity/Example Scenes/Streams/PointCloudVFX/MatrixVFX.unity
     guid: 476d2bb58a0b6214db6bec9fb0a17d93
+  - enabled: 1
+    path: Assets/Plugins/OAKForUnity/Example Scenes/Predefined/FaceDetector.unity
+    guid: 886f094449682734f9a0e7d1e0c0c97a
   m_configObjects: {}
