@@ -22,6 +22,7 @@
 > `OAK For Unity` is in active development. Its features and API are subject to significant change as development progresses. For beta testing checkout `beta` branch.
 
 ## Current status (change log):
+2022-03-10: Object detector demo scene for WINDOWS.
 2022-02-21: Face detector demo scene for WINDOWS. 
 2022-01-19: Demo menu scene added. Now it's much easier to navigate throught the demos. Go to menu on top: "OAK For Unity"->"Example scenes" and hit play
 ![detailmenu](docs/img/detail-menu.png)
