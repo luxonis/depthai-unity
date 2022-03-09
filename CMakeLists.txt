@@ -38,6 +38,7 @@ add_library(${TARGET_NAME}
     src/device/Streams.cpp
     src/device/PointCloudVFX.cpp
     src/predefined/FaceDetector.cpp
+    src/predefined/ObjectDetector.cpp
     src/Depth.cpp
 )
 
