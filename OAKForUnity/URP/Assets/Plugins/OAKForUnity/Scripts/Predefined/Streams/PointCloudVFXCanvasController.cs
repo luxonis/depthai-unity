@@ -31,7 +31,7 @@ namespace OAKForUnity
         private void Init()
         {
             // Texture2D binding
-            monoRCameraImage.material.mainTexture = pipeline.monoRTexture;
+            monoRCameraImage.material.mainTexture = pipeline.colorTexture;
             depthCameraImage.material.mainTexture = pipeline.depthTexture;
             _init = true;
         }

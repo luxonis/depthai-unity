@@ -67,8 +67,13 @@ dai::Pipeline createPointCloudVFXPipeline(PipelineConfig *config)
     {
         xlinkOut = pipeline.create<dai::node::XLinkOut>();
         xlinkOut->setStreamName("preview");
-        colorCam->setPreviewSize(config->previewSizeWidth, config->previewSizeHeight);
-        colorCam->preview.link(xlinkOut->input);
+        
+        if (config->depthAlign > 0) colorCam->isp.link(xlinkOut->input);
+        else 
+        {
+            colorCam->setPreviewSize(config->previewSizeWidth, config->previewSizeHeight);
+            colorCam->preview.link(xlinkOut->input);
+        }
     }
 
     // Color camera properties            
@@ -108,7 +113,7 @@ dai::Pipeline createPointCloudVFXPipeline(PipelineConfig *config)
         stereo->setConfidenceThreshold(config->confidenceThreshold);
         // LR-check is required for depth alignment
         stereo->setLeftRightCheck(config->leftRightCheck);
-        //stereo->setDepthAlign(dai::CameraBoardSocket::RGB);
+        if (config->depthAlign > 0) stereo->setDepthAlign(dai::CameraBoardSocket::RGB);
         stereo->setSubpixel(config->subpixel);
         
         stereo->initialConfig.setMedianFilter(dai::MedianFilter::MEDIAN_OFF);
@@ -189,7 +194,7 @@ extern "C"
         
         return res;
     }
-    
+
     /**
     * Pipeline results
     *
@@ -244,25 +249,57 @@ extern "C"
                 depthQueue = device->getOutputQueue("depth", 1, false);
                 monoRQueue = device->getOutputQueue("monoR", 1, false);
             }
-            
-            if (getPreview)
-            {
-                imgFrame = preview->get<dai::ImgFrame>();
-                frame = toMat(imgFrame->getData(), imgFrame->getWidth(), imgFrame->getHeight(), 3, 1);
-                toARGB(frame,frameInfo->colorPreviewData);
-            }
         
             vector<std::shared_ptr<dai::ImgFrame>> imgDepthFrames,imgDispFrames,imgMonoRFrames,imgMonoLFrames;
             std::shared_ptr<dai::ImgFrame> imgDepthFrame,imgDispFrame,imgMonoRFrame,imgMonoLFrame;
 
+            cv::Mat monoR;
             // In this case following Keijiro approach we return directly pointers to depth (CV_16UC1 / R16) and rectifiedR (CV_8UC1 / R8)
+            
+            std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> t1;
+            std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> t2;
+
+            bool match = false;
+
+            if (getPreview)
+            {
+                imgFrame = preview->get<dai::ImgFrame>();
+                t1 = imgFrame->getTimestamp();
+            }
+
             if (useDepth)
             {            
-                imgDepthFrame = depthQueue->get<dai::ImgFrame>();//imgDepthFrames[count-1];
-                frameInfo->depthData = imgDepthFrame->getData().data();
+                imgDepthFrame = depthQueue->get<dai::ImgFrame>();
                 
-                imgMonoRFrame = monoRQueue->get<dai::ImgFrame>();
-                frameInfo->rectifiedRData = imgMonoRFrame->getData().data();
+                t2 = imgDepthFrame->getTimestamp();
+
+                while (imgDepthFrame)
+                {
+                    t2 = imgDepthFrame->getTimestamp();
+                    if (t1-t2 < milliseconds(20))
+                    {
+                        match = true;
+                        break;
+                    }
+                    else
+                    {
+                        imgDepthFrame = depthQueue->get<dai::ImgFrame>();
+                    }
+                }
+
+                if (match)
+                {
+                    auto fp16 = (const unsigned short*)imgDepthFrame->getData().data();         
+                    for (int i = 0; i < 640*360/*640*400*/; i++) {
+                        ((unsigned short*)frameInfo->depthData)[i] = (unsigned short)fp16[i];
+                    }
+                }
+            }
+
+            if (match)
+            {
+                frame = imgFrame->getCvFrame();
+                toARGB(frame,frameInfo->colorPreviewData);
             }
 
             // SYSTEM INFORMATION

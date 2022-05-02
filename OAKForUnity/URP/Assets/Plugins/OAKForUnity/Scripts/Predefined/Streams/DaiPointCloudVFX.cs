@@ -39,10 +39,14 @@ namespace OAKForUnity
 
         public bool useIMU = false;
         public bool retrieveSystemInformation = false;
-        private const bool GETPreview = false;
+        private const bool GETPreview = true;
         private const bool UseDepth = true;
 
+        public bool useAlignment = false;
+        public bool useSubpixel = true;
+
         [Header("Point Cloud VFX Results")] 
+        public Texture2D colorTexture;
         public Texture2D monoRTexture;
         public Texture2D depthTexture;
         public string pointCloudVFXResults;
@@ -58,24 +62,65 @@ namespace OAKForUnity
         private GCHandle _depthPixelHandle;
         private IntPtr _depthPixelPtr;
 
+        private Color32[] _colorPixel32;
+        private GCHandle _colorPixelHandle;
+        private IntPtr _colorPixelPtr;
+
+        public ushort[] depthU;
+        public GCHandle depthGC;
+        public IntPtr depthPtr;
+        
         /*
          * Init textures. In this case we allocate them but copy data in unity side with loadrawdata
          */
         void InitTexture()
         {
-            monoRTexture = new Texture2D
-                (640, 400, TextureFormat.R8, false)
-                {filterMode = FilterMode.Point};
+            int previewResW = 300;
+            int previewResH = 300;
+            int monoW = 640;
+            int monoH = 400;
 
-            depthTexture = new Texture2D
-                (640, 400, TextureFormat.R16, false)
-                {filterMode = FilterMode.Point};
+
+            if (useAlignment)
+            {
+                previewResW = 640;
+                previewResH = 360;
+                monoW = 640;
+                monoH = 360;
+            }
+                
+            colorTexture = new Texture2D(previewResW, previewResH, TextureFormat.ARGB32, false);
+            _colorPixel32 = colorTexture.GetPixels32();
+            //Pin pixel32 array
+            _colorPixelHandle = GCHandle.Alloc(_colorPixel32, GCHandleType.Pinned);
+            //Get the pinned address
+            _colorPixelPtr = _colorPixelHandle.AddrOfPinnedObject();
+            
+            
+            monoRTexture = new Texture2D(monoW, monoH, TextureFormat.ARGB32, false);
+            _monoRPixel32 = monoRTexture.GetPixels32();
+            //Pin pixel32 array
+            _monoRPixelHandle = GCHandle.Alloc(_monoRPixel32, GCHandleType.Pinned);
+            //Get the pinned address
+            _monoRPixelPtr = _monoRPixelHandle.AddrOfPinnedObject();
+
+            depthTexture = new Texture2D(monoW, monoH, TextureFormat.R16, false);
+            
         }
 
         // Init textures. In this case we don't assign pointers previous copy
         void Start()
         {
             InitTexture();
+            
+            frameInfo.colorPreviewData = _colorPixelPtr;
+            frameInfo.rectifiedRData = _monoRPixelPtr;
+
+            if (useAlignment) depthU = new ushort[640 * 360];
+            else depthU = new ushort[640 * 400];
+            depthGC = GCHandle.Alloc(depthU, GCHandleType.Pinned);
+            depthPtr = depthGC.AddrOfPinnedObject();
+            frameInfo.depthData = depthPtr;
         }
 
         // Prepare Pipeline Configuration and call pipeline init implementation
@@ -86,10 +131,10 @@ namespace OAKForUnity
             config.colorCameraResolution = (int) rgbResolution;
             config.colorCameraInterleaved = Interleaved;
             config.colorCameraColorOrder = (int) ColorOrderV;
-            
-            // we don't need preview color
-            config.previewSizeHeight = 0;
-            config.previewSizeWidth = 0;
+
+            // Not really impact if using alignment
+            config.previewSizeHeight = 300;
+            config.previewSizeWidth = 300;
 
             // Mono camera
             config.monoLCameraResolution = (int) monoResolution;
@@ -97,11 +142,23 @@ namespace OAKForUnity
 
             // Depth
             config.confidenceThreshold = 245;
+
+            if (useAlignment)
+            {
+                config.ispScaleF1 = 1; 
+                config.ispScaleF2 = 3; 
+                config.manualFocus = 130;
+                config.depthAlign = 1; // RGB align
+            }
+            else
+            {
+                config.ispScaleF1 = 0;
+                config.ispScaleF2 = 0;
+                config.manualFocus = 0;
+            }
+
             config.leftRightCheck = true;
-            config.subpixel = true;
-            config.ispScaleF1 = 0;
-            config.ispScaleF2 = 0;
-            config.manualFocus = 0;
+            config.subpixel = useSubpixel;
             config.deviceId = device.deviceId;
             config.deviceNum = (int) device.deviceNum;
             config.medianFilter = (int) medianFilter;
@@ -140,19 +197,15 @@ namespace OAKForUnity
             // If not replaying data
             if (!device.replayResults)
             {
-                // Load texture data from plugin pointer
-                if (frameInfo.rectifiedRData != IntPtr.Zero)
-                {
-                    monoRTexture.LoadRawTextureData(frameInfo.rectifiedRData, 640 * 400);
-                    monoRTexture.Apply();
-                }
-                
-                // Load texture data from plugin pointer
-                if (frameInfo.depthData != IntPtr.Zero)
-                {
-                    depthTexture.LoadRawTextureData(frameInfo.depthData, 640 * 400 * 2);
-                    depthTexture.Apply();
-                }
+                colorTexture.SetPixels32(_colorPixel32);
+                colorTexture.Apply();
+
+                monoRTexture.SetPixels32(_monoRPixel32);
+                monoRTexture.Apply();
+
+                if (!useAlignment) depthTexture.LoadRawTextureData(depthPtr, 640 * 400 *2);
+                else depthTexture.LoadRawTextureData(depthPtr, 640 * 360 *2);
+                depthTexture.Apply();
 
                 // If recording data
                 if (!device.recordResults) return;

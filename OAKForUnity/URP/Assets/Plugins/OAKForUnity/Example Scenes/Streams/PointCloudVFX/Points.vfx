@@ -242,7 +242,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 400
+      m_SerializableObject: 360
     min: -Infinity
     max: Infinity
     enumValues: []
@@ -398,7 +398,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614560}
   - {fileID: 8926484042661614564}
   m_UIPosition: {x: 0, y: 0}
-  m_UICollapsed: 1
+  m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_MasterSlot: {fileID: 8926484042661614559}
   m_MasterData:
@@ -710,7 +710,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614583}
   - {fileID: 8926484042661614628}
   dataType: 0
-  capacity: 256000
+  capacity: 230400
   stripCapacity: 16
   particlePerStripCount: 16
   needsComputeBounds: 0
@@ -1354,7 +1354,8 @@ MonoBehaviour:
       m_SerializableType: UnityEngine.Vector4, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
   m_Direction: 1
-  m_LinkedSlots: []
+  m_LinkedSlots:
+  - {fileID: 8926484042661614675}
 --- !u!114 &8926484042661614670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1387,8 +1388,7 @@ MonoBehaviour:
       m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 1
-  m_LinkedSlots:
-  - {fileID: 8926484042661614675}
+  m_LinkedSlots: []
 --- !u!114 &8926484042661614671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1552,7 +1552,7 @@ MonoBehaviour:
         Culture=neutral, PublicKeyToken=null
   m_Direction: 0
   m_LinkedSlots:
-  - {fileID: 8926484042661614670}
+  - {fileID: 8926484042661614669}
 --- !u!114 &8926484042661614676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1995,7 +1995,7 @@ MonoBehaviour:
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
   m_UIPosition: {x: 0, y: 0}
-  m_UICollapsed: 1
+  m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
   m_OutputSlots:
@@ -2094,7 +2094,7 @@ MonoBehaviour:
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
   m_UIPosition: {x: 0, y: 0}
-  m_UICollapsed: 1
+  m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
   m_OutputSlots:
@@ -2155,7 +2155,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 400
+      m_SerializableObject: 360
     m_Space: 2147483647
   m_Property:
     name: o
@@ -3658,7 +3658,8 @@ MonoBehaviour:
   m_OutputSlots:
   - {fileID: 8926484042661614977}
   - {fileID: 8926484042661614968}
-  m_Subgraph: {fileID: 5371698745253816930, guid: f5cafd2ae216b4052be8bc7176b44489, type: 3}
+  m_Subgraph: {fileID: 5371698745253816930, guid: f5cafd2ae216b4052be8bc7176b44489,
+    type: 3}
 --- !u!114 &8926484042661614951
 MonoBehaviour:
   m_ObjectHideFlags: 0
