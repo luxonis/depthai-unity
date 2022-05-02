@@ -38,7 +38,7 @@ class VFXDepthCameraBinder : VFXBinderBase
     {
         if (_driver.monoRTexture == null) return;
 
-        component.SetTexture(_monoMapProperty, _driver.monoRTexture);
+        component.SetTexture(_monoMapProperty, _driver.colorTexture);
         component.SetTexture(_depthMapProperty, _driver.depthTexture);
     }
 

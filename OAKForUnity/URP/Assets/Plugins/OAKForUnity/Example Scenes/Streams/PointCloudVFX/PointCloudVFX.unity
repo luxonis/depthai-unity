@@ -444,7 +444,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Rectified R
+  m_text: 'Color
 
 '
   m_isRightToLeft: 0
@@ -864,10 +864,14 @@ MonoBehaviour:
   medianFilter: 3
   useIMU: 0
   retrieveSystemInformation: 0
+  useAlignment: 1
+  useSubpixel: 0
+  colorTexture: {fileID: 0}
   monoRTexture: {fileID: 0}
   depthTexture: {fileID: 0}
   pointCloudVFXResults: 
   systemInfo: 
+  depthU: 
 --- !u!1 &1687573504
 GameObject:
   m_ObjectHideFlags: 0
@@ -1045,7 +1049,13 @@ VisualEffect:
     m_Vector4f:
       m_Array: []
     m_Uint:
-      m_Array: []
+      m_Array:
+      - m_Value: 640
+        m_Name: Columns
+        m_Overridden: 1
+      - m_Value: 360
+        m_Name: Rows
+        m_Overridden: 1
     m_Int:
       m_Array: []
     m_Matrix4x4f:
