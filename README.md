@@ -19,13 +19,16 @@
 <img src="https://img.shields.io/badge/unity-Builtin-green.svg?style=flat-square" alt="unity Builtin">
 &nbsp;
 
-> `OAK For Unity` is in active development. Its features and API are subject to significant change as development progresses. For beta testing checkout `beta` branch.
+> `OAK For Unity` is in active development. Its features and API are subject to significant change as development progresses.
 
 ## Current status (change log):
+
+2022-05-04: Fix point cloud issues when export as binary. Color point cloud.
 2022-03-10: Object detector demo scene for WINDOWS.
-2022-02-21: Face detector demo scene for WINDOWS. 
+2022-02-21: Face detector demo scene for WINDOWS.
 2022-01-19: Demo menu scene added. Now it's much easier to navigate throught the demos. Go to menu on top: "OAK For Unity"->"Example scenes" and hit play
 ![detailmenu](docs/img/detail-menu.png)
+
 <details><summary>Expand to read more ...</summary>
 2022-01-14: Device manager, basic streams and point cloud for WINDOWS. Working on rest platforms (MacOS/Linux)
 </details>
@@ -106,6 +109,7 @@ If you run into any other problems with the OAK For Unity or have a specific fea
 - Integration with Unity Robotics Hub package and ROS ([Coming soon](https://github.com/luxonis/depthai-unity))
 
 ## Community Projects
+
 Are you building spatial app using OAK For Unity? Please DM and will be a pleasure to add a reference here
 
 - jbb-kryo is building Unity app with some support for HoloLens2 and MKRT. Take a look here: https://github.com/kryotech-ltd/depthai-unity/tree/mkrt-hl2-update
