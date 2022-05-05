@@ -865,7 +865,7 @@ MonoBehaviour:
   useIMU: 0
   retrieveSystemInformation: 0
   useAlignment: 1
-  useSubpixel: 0
+  useSubpixel: 1
   colorTexture: {fileID: 0}
   monoRTexture: {fileID: 0}
   depthTexture: {fileID: 0}

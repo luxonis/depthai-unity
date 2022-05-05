@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 300}
   m_MaxSize: {x: 24288, y: 24288}
   vertical: 0
-  controlID: 1358
+  controlID: 183
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 300}
   m_MaxSize: {x: 16192, y: 24288}
   vertical: 1
-  controlID: 1359
+  controlID: 184
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 0
-  controlID: 1360
+  controlID: 185
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -221,7 +221,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 200}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 1372
+  controlID: 209
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -348,7 +348,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 19
+    y: 73
     width: 1159
     height: 787
   m_ViewDataDictionary: {fileID: 0}
@@ -369,7 +369,7 @@ MonoBehaviour:
   m_UseMipMap: 0
   m_VSyncEnabled: 0
   m_Gizmos: 0
-  m_Stats: 0
+  m_Stats: 1
   m_SelectedSizes: 03000000000000000000000000000000000000000000000000000000000000000000000000000000
   m_ZoomArea:
     m_HRangeLocked: 0
@@ -397,23 +397,23 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 21
-      width: 1920
-      height: 907
-    m_Scale: {x: 0.83981484, y: 0.83981484}
-    m_Translation: {x: 960, y: 453.5}
+      width: 1159
+      height: 766
+    m_Scale: {x: 0.60364586, y: 0.60364586}
+    m_Translation: {x: 579.49994, y: 383}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -1143.1091
-      y: -540
-      width: 2286.2183
-      height: 1080
+      x: -959.9999
+      y: -634.47797
+      width: 1919.9999
+      height: 1268.9559
     m_MinimalGUI: 1
-  m_defaultScale: 0.83981484
-  m_LastWindowPixelSize: {x: 1920, y: 928}
+  m_defaultScale: 0.60364586
+  m_LastWindowPixelSize: {x: 1159, y: 787}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 01000000000000000000
@@ -669,7 +669,7 @@ MonoBehaviour:
       index: 13
       layout: 4
   m_WindowGUID: cc27987af1a868c49b0894db9c0f5429
-  m_Gizmos: 1
+  m_Gizmos: 0
   m_OverrideSceneCullingMask: 6917529027641081856
   m_SceneIsLit: 1
   m_SceneLighting: 1
@@ -678,9 +678,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 0.3673548, y: -0.38528284, z: 2.115375}
+    m_Target: {x: -0.26134098, y: -0.13012661, z: 1.3533667}
     speed: 2
-    m_Value: {x: 0.3673548, y: -0.38528284, z: 2.115375}
+    m_Value: {x: -0.26134098, y: -0.13012661, z: 1.3533667}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -703,10 +703,10 @@ MonoBehaviour:
       m_Fade:
         m_Target: 0
         speed: 2
-        m_Value: 0
+        m_Value: 1
       m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.4}
       m_Pivot: {x: 0, y: 0, z: 0}
-      m_Size: {x: 0, y: 0}
+      m_Size: {x: 1, y: 1}
     yGrid:
       m_Fade:
         m_Target: 1
@@ -719,21 +719,21 @@ MonoBehaviour:
       m_Fade:
         m_Target: 0
         speed: 2
-        m_Value: 0
+        m_Value: 1
       m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.4}
       m_Pivot: {x: 0, y: 0, z: 0}
-      m_Size: {x: 0, y: 0}
+      m_Size: {x: 1, y: 1}
     m_ShowGrid: 1
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.12205836, y: -0.12233541, z: 0.015164987, w: -0.9848351}
+    m_Target: {x: 0.07400831, y: -0.0926091, z: 0.006902691, w: 0.9929244}
     speed: 2
-    m_Value: {x: -0.12205837, y: -0.12233542, z: 0.015164987, w: -0.98483515}
+    m_Value: {x: 0.083264, y: -0.029891232, z: 0.002498676, w: 0.99607605}
   m_Size:
-    m_Target: 1.0871574
+    m_Target: 0.7676873
     speed: 2
-    m_Value: 1.0871574
+    m_Value: 0.7676873
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -792,7 +792,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: b8f0ffff32fbffff
+      m_ExpandedIDs: 86f6ffff08fbffff46660000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -858,7 +858,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Plugins/OAKForUnity/Scripts/Predefined/ObjectDetector
+    - Assets/Plugins/OAKForUnity/Example Scenes/Streams/PointCloudVFX
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 0
@@ -872,7 +872,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: d2610000
     m_LastClickedID: 25042
-    m_ExpandedIDs: ffffffff00000000606300006463000066630000686300006a630000
+    m_ExpandedIDs: ffffffff000000004264000044640000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -900,7 +900,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: ffffffff00000000606300006463000066630000686300006a630000
+    m_ExpandedIDs: ffffffff000000004264000044640000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
