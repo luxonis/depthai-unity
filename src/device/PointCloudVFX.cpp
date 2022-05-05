@@ -255,51 +255,24 @@ extern "C"
 
             cv::Mat monoR;
             // In this case following Keijiro approach we return directly pointers to depth (CV_16UC1 / R16) and rectifiedR (CV_8UC1 / R8)
-            
-            std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> t1;
-            std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> t2;
 
             bool match = false;
 
             if (getPreview)
             {
                 imgFrame = preview->get<dai::ImgFrame>();
-                t1 = imgFrame->getTimestamp();
+                frame = imgFrame->getCvFrame();
+                toARGB(frame,frameInfo->colorPreviewData);
             }
 
             if (useDepth)
             {            
                 imgDepthFrame = depthQueue->get<dai::ImgFrame>();
                 
-                t2 = imgDepthFrame->getTimestamp();
-
-                while (imgDepthFrame)
-                {
-                    t2 = imgDepthFrame->getTimestamp();
-                    if (t1-t2 < milliseconds(20))
-                    {
-                        match = true;
-                        break;
-                    }
-                    else
-                    {
-                        imgDepthFrame = depthQueue->get<dai::ImgFrame>();
-                    }
+                auto fp16 = (const unsigned short*)imgDepthFrame->getData().data();         
+                for (int i = 0; i < 640*360/*640*400*/; i++) {
+                    ((unsigned short*)frameInfo->depthData)[i] = (unsigned short)fp16[i];
                 }
-
-                if (match)
-                {
-                    auto fp16 = (const unsigned short*)imgDepthFrame->getData().data();         
-                    for (int i = 0; i < 640*360/*640*400*/; i++) {
-                        ((unsigned short*)frameInfo->depthData)[i] = (unsigned short)fp16[i];
-                    }
-                }
-            }
-
-            if (match)
-            {
-                frame = imgFrame->getCvFrame();
-                toARGB(frame,frameInfo->colorPreviewData);
             }
 
             // SYSTEM INFORMATION

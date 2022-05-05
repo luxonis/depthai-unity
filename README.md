@@ -24,9 +24,13 @@
 ## Current status (change log):
 
 2022-05-04: Fix point cloud issues when export as binary. Color point cloud.
+
 2022-03-10: Object detector demo scene for WINDOWS.
+
 2022-02-21: Face detector demo scene for WINDOWS.
+
 2022-01-19: Demo menu scene added. Now it's much easier to navigate throught the demos. Go to menu on top: "OAK For Unity"->"Example scenes" and hit play
+
 ![detailmenu](docs/img/detail-menu.png)
 
 <details><summary>Expand to read more ...</summary>
