@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Plugins/OAKForUnity/Example Scenes/Predefined/ObjectDetector.unity
     guid: 5fc8229e0b9e3ec48a2a6bd1fd25164e
+  - enabled: 1
+    path: Assets/Plugins/OAKForUnity/Example Scenes/Predefined/BodyPose.unity
+    guid: 9f6cbbad649719a49a417715c6eefcd4
   m_configObjects: {}
