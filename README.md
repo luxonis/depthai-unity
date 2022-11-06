@@ -23,6 +23,8 @@
 
 ## Current status (change log):
 
+2022-11-07: Support for OAK-PRO and OAK-POE devices.
+
 2022-06-05: Body pose demo scene for WINDOWS.
 
 2022-05-04: Fix point cloud issues when export as binary. Color point cloud.
