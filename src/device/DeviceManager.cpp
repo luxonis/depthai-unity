@@ -176,7 +176,7 @@ extern "C"
         for(const auto& d : allDevices) {
             nlohmann::json deviceJson;
             deviceJson["deviceId"] = d.getMxId().c_str();
-            deviceJson["deviceName"] = d.desc.name;
+            //deviceJson["deviceName"] = d.desc.name;
             deviceJson["deviceState"] = "AVAILABLE";
             if (d.state == X_LINK_BOOTED) deviceJson["deviceState"] = "BOOTED";
             devicesArr.push_back(deviceJson);
