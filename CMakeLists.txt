@@ -40,6 +40,7 @@ add_library(${TARGET_NAME}
     src/predefined/FaceDetector.cpp
     src/predefined/ObjectDetector.cpp
     src/predefined/BodyPose.cpp
+    src/predefined/FaceEmotion.cpp
     src/Depth.cpp
 )
 

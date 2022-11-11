@@ -23,9 +23,13 @@
 
 ## Current status (change log):
 
+2022-11-11: Face emotion demo scene for WINDOWS.
+
 2022-11-07: Support for OAK-PRO and OAK-POE devices.
 
 2022-06-05: Body pose demo scene for WINDOWS.
+
+<details><summary>Expand to read more ...</summary>
 
 2022-05-04: Fix point cloud issues when export as binary. Color point cloud.
 
@@ -35,11 +39,13 @@
 
 2022-01-19: Demo menu scene added. Now it's much easier to navigate throught the demos. Go to menu on top: "OAK For Unity"->"Example scenes" and hit play
 
-![detailmenu](docs/img/detail-menu.png)
-
-<details><summary>Expand to read more ...</summary>
 2022-01-14: Device manager, basic streams and point cloud for WINDOWS. Working on rest platforms (MacOS/Linux)
 </details>
+
+<br>
+Now it's much easier to navigate throught the demos. Go to menu on top: "OAK For Unity"->"Example scenes" and hit play
+
+![detailmenu](docs/img/detail-menu.png)
 
 **[What is OAK For Unity? (Click here for more detail)](docs/What_is.md)**
 

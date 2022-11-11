@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Plugins/OAKForUnity/Example Scenes/Predefined/BodyPose.unity
     guid: 9f6cbbad649719a49a417715c6eefcd4
+  - enabled: 1
+    path: Assets/Plugins/OAKForUnity/Example Scenes/Predefined/FaceEmotion.unity
+    guid: 1718dc56a8f8f104dbf265a7022e639d
   m_configObjects: {}
