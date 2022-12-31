@@ -283,8 +283,10 @@ extern "C"
             float maxScore = 0.0;
             int maxPos = 0;
 
+            nlohmann::json facesArr = {};
+            nlohmann::json emotionsArr = {};
             nlohmann::json bestFace = {};
-            nlohmann::json faceEmotion = {};
+            nlohmann::json bestFaceEmotion = {};
 
             int count;
             vector<std::shared_ptr<dai::ImgFrame>> imgDepthFrames;
@@ -330,19 +332,19 @@ extern "C"
             int i = 0;
             cv::Mat faceFrame;
             for(const auto& d : dets){
-                if (i == maxPos)
-                {                    
-                    int x1 = d.x_min * frame.cols;
-                    int y1 = d.y_min * frame.rows;
-                    int x2 = d.x_max * frame.cols;
-                    int y2 = d.y_max * frame.rows;
-                    int mx = x1 + ((x2 - x1) / 2);
-                    int my = y1 + ((y2 - y1) / 2);
+                int x1 = d.x_min * frame.cols;
+                int y1 = d.y_min * frame.rows;
+                int x2 = d.x_max * frame.cols;
+                int y2 = d.y_max * frame.rows;
+                int mx = x1 + ((x2 - x1) / 2);
+                int my = y1 + ((y2 - y1) / 2);
 
-                    // m_mx = mx;
-                    // m_my = my;
+                // m_mx = mx;
+                // m_my = my;
 
-                    if (faceScoreThreshold <= d.score)
+                if (faceScoreThreshold <= d.score)
+                {
+                    if (i==maxPos)
                     {
                         bestFace["label"] = d.label;
                         bestFace["score"] = d.score;
@@ -352,58 +354,91 @@ extern "C"
                         bestFace["ymax"] = d.y_max;
                         bestFace["xcenter"] = mx;
                         bestFace["ycenter"] = my;
+                    }
 
-                        if (x1 > 0 && y1 > 0 && x2 < 300 && y2 < 300)
-                            faceFrame = frame(cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)));
-                        else  
+                    nlohmann::json face;
+
+                    face["label"] = d.label;
+                    face["score"] = d.score;
+                    face["xmin"] = d.x_min;
+                    face["ymin"] = d.y_min;
+                    face["xmax"] = d.x_max;
+                    face["ymax"] = d.y_max;
+                    face["xcenter"] = mx;
+                    face["ycenter"] = my;
+
+                    if (x1 > 0 && y1 > 0 && x2 < 300 && y2 < 300)
+                        faceFrame = frame(cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)));
+                    else  
+                    {
+                        if (x1 <= 0) x1 = 0;
+                        if (y1 <= 0) y1 = 0;
+                        if (x2 >= 300) x2 = 300;
+                        if (y2 >= 300) y2 = 300;
+                        faceFrame = frame(cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)));
+                    }
+
+                    // ------------------------- SECOND STAGE - FACE EMOTION
+
+                    dai::NNData data_in;
+
+                    auto tensor = std::make_shared<dai::RawBuffer>();
+                    if (faceFrame.cols > 0 && faceFrame.rows > 0)
+                    {
+                        cv::Mat frame2 = resizeKeepAspectRatio(faceFrame, cv::Size(64,64), cv::Scalar(0));
+
+                        toPlanar(frame2, tensor->data);
+
+                        landm_in->send(tensor);
+
+                        auto detface = landm_out->get<dai::NNData>();
+                        std::vector<float> detfaceYData = detface->getFirstLayerFp16();
+                        
+                        nlohmann::json faceEmotion;
+
+                        if (detfaceYData.size() > 0)
                         {
-                            if (x1 <= 0) x1 = 0;
-                            if (y1 <= 0) y1 = 0;
-                            if (x2 >= 300) x2 = 300;
-                            if (y2 >= 300) y2 = 300;
-                            faceFrame = frame(cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)));
-                        }
-
-                        // ------------------------- SECOND STAGE - FACE EMOTION
-
-                        dai::NNData data_in;
-
-                        auto tensor = std::make_shared<dai::RawBuffer>();
-                        if (faceFrame.cols > 0 && faceFrame.rows > 0)
-                        {
-                            cv::Mat frame2 = resizeKeepAspectRatio(faceFrame, cv::Size(64,64), cv::Scalar(0));
-
-                            toPlanar(frame2, tensor->data);
-
-                            landm_in->send(tensor);
-
-                            auto detface = landm_out->get<dai::NNData>();
-                            std::vector<float> detfaceYData = detface->getFirstLayerFp16();
-                            if (detfaceYData.size() > 0)
+                            if (i == maxPos)
                             {
-                                faceEmotion["neutral"] = detfaceYData[0];
-                                faceEmotion["happy"] = detfaceYData[1];
-                                faceEmotion["sad"] = detfaceYData[2];
-                                faceEmotion["surprise"] = detfaceYData[3];
-                                faceEmotion["anger"] = detfaceYData[4];
+                                bestFaceEmotion["neutral"] = detfaceYData[0];
+                                bestFaceEmotion["happy"] = detfaceYData[1];
+                                bestFaceEmotion["sad"] = detfaceYData[2];
+                                bestFaceEmotion["surprise"] = detfaceYData[3];
+                                bestFaceEmotion["anger"] = detfaceYData[4];
                             }
 
-                            if (useDepth && count>0)
-                            {
-                                auto spatialData = computeDepth(mx,my,frame.rows,depthFrameOrig); 
+                            faceEmotion["neutral"] = detfaceYData[0];
+                            faceEmotion["happy"] = detfaceYData[1];
+                            faceEmotion["sad"] = detfaceYData[2];
+                            faceEmotion["surprise"] = detfaceYData[3];
+                            faceEmotion["anger"] = detfaceYData[4];
+                        }
 
-                                for(auto depthData : spatialData) {
-                                    auto roi = depthData.config.roi;
-                                    roi = roi.denormalize(depthFrame.cols, depthFrame.rows);
+                        if (useDepth && count>0)
+                        {
+                            auto spatialData = computeDepth(mx,my,frame.rows,depthFrameOrig); 
 
+                            for(auto depthData : spatialData) {
+                                auto roi = depthData.config.roi;
+                                roi = roi.denormalize(depthFrame.cols, depthFrame.rows);
+
+                                if (i == maxPos)
+                                {
                                     bestFace["X"] = (int)depthData.spatialCoordinates.x;
                                     bestFace["Y"] = (int)depthData.spatialCoordinates.y;
                                     bestFace["Z"] = (int)depthData.spatialCoordinates.z;
                                 }
-                            }
 
-                            if (drawBestFaceInPreview) cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), cv::Scalar(255,255,255));
+                                face["X"] = (int)depthData.spatialCoordinates.x;
+                                face["Y"] = (int)depthData.spatialCoordinates.y;
+                                face["Z"] = (int)depthData.spatialCoordinates.z;
+                            }
                         }
+
+                        facesArr.push_back(face);
+                        emotionsArr.push_back(faceEmotion);
+
+                        if (drawBestFaceInPreview) cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), cv::Scalar(255,255,255));
                     }
                 }
                 i++;
@@ -424,7 +459,9 @@ extern "C"
 
             // RETURN JSON
             faceEmotionJson["best"] = bestFace;
-            faceEmotionJson["faceEmotion"] = faceEmotion;
+            faceEmotionJson["bestFaceEmotion"] = bestFaceEmotion;
+            faceEmotionJson["faces"] = facesArr;
+            faceEmotionJson["emotions"] = emotionsArr;
 
             char* ret = (char*)::malloc(strlen(faceEmotionJson.dump().c_str())+1);
             ::memcpy(ret, faceEmotionJson.dump().c_str(),strlen(faceEmotionJson.dump().c_str()));
