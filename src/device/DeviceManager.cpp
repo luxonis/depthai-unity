@@ -159,7 +159,6 @@ nlohmann::json GetIMU(std::shared_ptr<dai::Device> device)
     return imuJson;
 }
 
-
 // Interface with Unity C#
 extern "C"
 {
@@ -207,4 +206,35 @@ extern "C"
             device->close();
         }
     }
+
+    /**
+    * SetLaserProjectionBrightness
+    *
+    * @param laserDotProjectionBrightness laser dot projection brightness
+    * @param deviceNum Device selection on unity dropdown
+    * @returns True, if succeed to change the value, otherwise False
+    */
+    EXPORT_API bool SetIrLaserDotProjectionBrightness(float laserIrDotProjectionBrightness, int deviceNum)
+    {
+        std::shared_ptr<dai::Device> device = GetDevice(deviceNum);
+        if (device == NULL) return false;
+
+        return device->setIrLaserDotProjectorBrightness(laserIrDotProjectionBrightness);
+    }
+
+    /**
+    * SetIRFloodLightBrightness
+    *
+    * @param irFloodLightBrightness IR light brightness
+    * @param deviceNum Device selection on unity dropdown
+    * @returns True, if succeed to change the value, otherwise False
+    */
+    EXPORT_API bool SetIrFloodLightBrightness(float irFloodLightBrightness, int deviceNum)
+    {
+        std::shared_ptr<dai::Device> device = GetDevice(deviceNum);
+        if (device == NULL) return false;
+
+        return device->setIrFloodLightBrightness(irFloodLightBrightness);
+    }
+
 }

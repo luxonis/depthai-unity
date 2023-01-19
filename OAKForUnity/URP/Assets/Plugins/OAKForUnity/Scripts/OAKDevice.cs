@@ -5,14 +5,39 @@
  * with first available device or start automatically with device id (mxid)
  * For more information about OAK devices check https://docs.luxonis.com
  */
+
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace OAKForUnity
 {
     public class OAKDevice : MonoBehaviour
     {
+        
+        //Lets make our calls from the Plugin
+        [DllImport("depthai-unity", CallingConvention = CallingConvention.Cdecl)]
+        /*
+        * Change laser dot projector brightness
+        *
+        * @param brightness
+        * @param device 
+        * @returns pipeline 
+        */
+        private static extern bool SetIrLaserDotProjectionBrightness(float laserIrDotProjectorBrightness, int deviceNum);
+
+        [DllImport("depthai-unity", CallingConvention = CallingConvention.Cdecl)]
+        /*
+        * Change IR flood light brightness
+        *
+        * @param brightness
+        * @param device 
+        * @returns pipeline 
+        */
+        private static extern bool SetIrFloodLightBrightness(float IrFloodLightBrightness, int deviceNum);
+
         // public enums
         
         // device num allows to assign specific number to OAK device. Up to 10 devices.
@@ -53,6 +78,10 @@ namespace OAKForUnity
         // The idea is support more than one pipeline and custom pipelines (defined inside Unity)
         public List<PredefinedBase> pipelines;
 
+        [Header("Only for OAK Devices with active vision like PRO")]
+        public float laserDotProjectorBrightness = 0.0f;
+        public float irFloodLightBrightness = 0.0f;
+        
         [Header("Record Results")] 
         // Enable recordResults and setup pathToRecord folder if you want to record results from a pipeline
         public bool recordResults;
@@ -78,10 +107,16 @@ namespace OAKForUnity
         // results from replay
         public string results { get; private set; }
 
+
+        private float _laserDotProjectorBrightness;
+        private float _irFloodLightBrightness;
         public void Start()
         {
             _frame = 0;
 
+            _laserDotProjectorBrightness = laserDotProjectorBrightness;
+            _irFloodLightBrightness = irFloodLightBrightness;
+            
             // Texture List initialization
             textures = new List<Texture2D>(textureNames.Count);
             for (int i = 0; i < textureNames.Count; i++)
@@ -212,6 +247,18 @@ namespace OAKForUnity
          */
         public void Update()
         {
+            if (Math.Abs(_laserDotProjectorBrightness - laserDotProjectorBrightness) > 0.0f)
+            {
+                _laserDotProjectorBrightness = laserDotProjectorBrightness;
+                SetIrLaserDotProjectionBrightness(laserDotProjectorBrightness, (int) deviceNum);
+            }
+
+            if (Math.Abs(_irFloodLightBrightness - irFloodLightBrightness) > 0.0f)
+            {
+                _irFloodLightBrightness = irFloodLightBrightness;
+                SetIrFloodLightBrightness(irFloodLightBrightness, (int) deviceNum);
+            }
+
             if (!replayResults) return;
             
             _elapsedTime += Time.deltaTime;
