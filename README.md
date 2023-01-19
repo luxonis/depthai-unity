@@ -23,6 +23,8 @@
 
 ## Current status (change log):
 
+2023-01-19: Support for active vision - oak-d-pro
+
 2022-11-11: Face emotion demo scene for WINDOWS.
 
 2022-11-07: Support for OAK-PRO and OAK-POE devices.
