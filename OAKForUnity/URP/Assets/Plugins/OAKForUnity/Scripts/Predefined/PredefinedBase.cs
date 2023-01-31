@@ -129,6 +129,7 @@ namespace OAKForUnity
             THE_4_K,
             THE_12_MP,
             THE_13_MP,
+            THE_800_P,
         }
 
         // Color camera order

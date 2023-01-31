@@ -120,8 +120,16 @@ namespace OAKForUnity
             // Need it for depth
             config.confidenceThreshold = 230;
             config.leftRightCheck = true;
-            config.ispScaleF1 = 2;
-            config.ispScaleF2 = 3;
+            if (rgbResolution == RGBResolution.THE_800_P)
+            {
+                config.ispScaleF1 = 1;
+                config.ispScaleF2 = 2;
+            }
+            else
+            {
+                config.ispScaleF1 = 2;
+                config.ispScaleF2 = 3;
+            }
             config.manualFocus = 130;
             config.depthAlign = 1; // RGB align
             config.subpixel = true;

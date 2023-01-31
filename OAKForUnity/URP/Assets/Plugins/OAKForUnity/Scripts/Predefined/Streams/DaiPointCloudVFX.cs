@@ -83,10 +83,20 @@ namespace OAKForUnity
 
             if (useAlignment)
             {
-                previewResW = 640;
-                previewResH = 360;
-                monoW = 640;
-                monoH = 360;
+                if (rgbResolution == RGBResolution.THE_800_P)
+                {
+                    previewResW = 640;
+                    previewResH = 400;
+                    monoW = 640;
+                    monoH = 400;
+                }
+                else
+                {
+                    previewResW = 640;
+                    previewResH = 360;
+                    monoW = 640;
+                    monoH = 360;
+                }
             }
                 
             colorTexture = new Texture2D(previewResW, previewResH, TextureFormat.ARGB32, false);
@@ -116,7 +126,12 @@ namespace OAKForUnity
             frameInfo.colorPreviewData = _colorPixelPtr;
             frameInfo.rectifiedRData = _monoRPixelPtr;
 
-            if (useAlignment) depthU = new ushort[640 * 360];
+            if (useAlignment)
+            {
+                if (rgbResolution == RGBResolution.THE_800_P)
+                    depthU = new ushort[640 * 400];
+                else depthU = new ushort[640 * 360];
+            }
             else depthU = new ushort[640 * 400];
             depthGC = GCHandle.Alloc(depthU, GCHandleType.Pinned);
             depthPtr = depthGC.AddrOfPinnedObject();
@@ -149,6 +164,8 @@ namespace OAKForUnity
                 config.ispScaleF2 = 3; 
                 config.manualFocus = 130;
                 config.depthAlign = 1; // RGB align
+
+                if (rgbResolution == RGBResolution.THE_800_P) config.ispScaleF2 = 2;
             }
             else
             {
@@ -204,6 +221,7 @@ namespace OAKForUnity
                 monoRTexture.Apply();
 
                 if (!useAlignment) depthTexture.LoadRawTextureData(depthPtr, 640 * 400 *2);
+                else if (rgbResolution == RGBResolution.THE_800_P) depthTexture.LoadRawTextureData(depthPtr, 640 * 400 *2);
                 else depthTexture.LoadRawTextureData(depthPtr, 640 * 360 *2);
                 depthTexture.Apply();
 
