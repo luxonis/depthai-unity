@@ -23,6 +23,11 @@
 
 ## Current status (change log):
 
+2023-04-18: 
+- Bump depthai-core to 2.21.2 
+- Prepare for Linux support
+- Update face emotion models to supported OpenVINO version
+
 2023-01-19: Support for active vision - oak-d-pro
 
 2022-11-11: Face emotion demo scene for WINDOWS.
