@@ -135,10 +135,10 @@ namespace OAKForUnity
             
             // 2-stage NN model
             config.nnPath1 = _dataPath +
-                             "/Plugins/OAKForUnity/Models/emotion_stage_1.blob";
+                             "/Plugins/OAKForUnity/Models/emotion_2021_stage_1.blob";
 
             config.nnPath2 = _dataPath +
-                             "/Plugins/OAKForUnity/Models/emotion_stage_2.blob";
+                             "/Plugins/OAKForUnity/Models/emotion_2021_stage_2.blob";
 
             // Plugin lib init pipeline implementation
             deviceRunning = InitFaceEmotion(config);
