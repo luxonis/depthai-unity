@@ -23,6 +23,13 @@
 
 ## Current status (change log):
 
+2023-04-19: Happy to announce Linux support after fixing some big issues regarding Unity editor and binary export.
+
+**Special thanks to @sliwowitz and @onuralpszr for their contribution and patience with Linux support !
+
+- Added pre-compiled library (Ubuntu 20.04.5 LTS)
+- Added instructions how to compile library
+
 2023-04-18: 
 - Bump depthai-core to 2.21.2 
 - Prepare for Linux support
@@ -94,6 +101,12 @@ Everything related to OAK For Unity package, projects and demo scenes.
 
 This repo contains precompiled versions of depthai-unity library lowering any entry barrier, so you don't need to deal with C/C++ compilation.
 
+**Export Unity binary**
+
+Notice when you export binary, Unity is not doing copy of models (URP/Assets/Plugin/OAKForUnity/Models)
+
+If you export example or scene using neural model like face detector, face emotion or body pose, you need to copy models folder content to URP_Data/Plugins/OAKForUnity/Models
+
 **[Prebuild Unity demos](prebuild_demos/README.md)**
 
 Do you want to try some of our demos?
@@ -102,7 +115,7 @@ Do you need to update depthai-unity? Do you want to integrate your own pipeline 
 
 ## Building depthai-unity (OPTIONAL)
 
-**[Building depthai-unity library - Coming soon]()**
+**[Building depthai-unity library](docs/Build_unity_lib.md)**
 
 Detailed instructions covering all steps to build depthai-unity C/C++ library (based on depthai-core C++ library) for all the platforms
 
@@ -139,13 +152,15 @@ Are you building spatial app using OAK For Unity? Please DM and will be a pleasu
 
 | Platform     | Unity       | Render Pipeline |
 | ------------ | ----------- | --------------- |
-| Win10        | 2021.2.7f1  | ALL             |
-| MacOS        | Coming soon | ALL             |
-| Linux Ubuntu | Coming Soon | ALL             |
+| Windows      | 2021.2.7f1  | ALL             |
+| MacOS        | 2021.2.7f1  | ALL             |
+| Linux        | 2021.3.22f1 | ALL (tested URP)|
 
 ## Known issues
 
-If you just use the precompiled depthai-unity library inside Unity, be sure you're using latest version.
+- If you're using OAK-1 (don't have stereo depth support) you need to disable depth on the examples, to prevent crash. UseDepth = false; config.confidenceThreshold = 0;
+
+- If you just use the precompiled depthai-unity library inside Unity, be sure you're using latest version.
 
 ## Related links
 
