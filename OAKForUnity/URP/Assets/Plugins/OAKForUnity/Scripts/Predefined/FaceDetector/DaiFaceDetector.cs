@@ -76,7 +76,7 @@ namespace OAKForUnity
         // Init textures. Each PredefinedBase implementation handles textures. Decoupled from external viz (Canvas, VFX, ...)
         void InitTexture()
         {
-            colorTexture = new Texture2D(300, 300, TextureFormat.ARGB32, false);
+            colorTexture = new Texture2D(600, 300, TextureFormat.ARGB32, false);
             _colorPixel32 = colorTexture.GetPixels32();
             //Pin pixel32 array
             _colorPixelHandle = GCHandle.Alloc(_colorPixel32, GCHandleType.Pinned);
@@ -105,8 +105,8 @@ namespace OAKForUnity
             config.colorCameraInterleaved = Interleaved;
             config.colorCameraColorOrder = (int) ColorOrderV;
             // Need it for color camera preview
+            config.previewSizeWidth = 600;
             config.previewSizeHeight = 300;
-            config.previewSizeWidth = 300;
             
             // Mono camera
             config.monoLCameraResolution = (int) monoResolution;
