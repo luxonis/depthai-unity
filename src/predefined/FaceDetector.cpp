@@ -50,6 +50,7 @@ dai::Pipeline createFaceDetectorPipeline(PipelineConfig *config)
     {
         xlinkOut = pipeline.create<dai::node::XLinkOut>();
         xlinkOut->setStreamName("preview");
+        colorCam->setPreviewKeepAspectRatio(false);
         colorCam->setPreviewSize(config->previewSizeWidth, config->previewSizeHeight);
         colorCam->preview.link(xlinkOut->input);
     }
