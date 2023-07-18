@@ -32,6 +32,10 @@
 
 #include "nlohmann/json.hpp"
 
+
+dai::SpatialLocationCalculatorConfigData sconfig;
+dai::SpatialLocationCalculatorAlgorithm calculationAlgorithm;
+
 /**
 * Pipeline creation based on streams template
 *
@@ -109,12 +113,42 @@ dai::Pipeline createFaceDetectorPipeline(PipelineConfig *config)
         if (config->medianFilter == 2) stereo->initialConfig.setMedianFilter(dai::MedianFilter::KERNEL_5x5);
         if (config->medianFilter == 3) stereo->initialConfig.setMedianFilter(dai::MedianFilter::KERNEL_7x7);
 
+        stereo->setDefaultProfilePreset(dai::node::StereoDepth::PresetMode::HIGH_DENSITY);
+
+        // Spatial Locator
+        auto spatialDataCalculator = pipeline.create<dai::node::SpatialLocationCalculator>();
+        auto xoutSpatialData = pipeline.create<dai::node::XLinkOut>();
+        auto xinSpatialCalcConfig = pipeline.create<dai::node::XLinkIn>();
+
+        xoutSpatialData->setStreamName("spatialData");
+        xinSpatialCalcConfig->setStreamName("spatialCalcConfig");
+
+
+        dai::Point2f topLeft(0.4f, 0.4f);
+        dai::Point2f bottomRight(0.6f, 0.6f);
+
+        sconfig.depthThresholds.lowerThreshold = 100;
+        sconfig.depthThresholds.upperThreshold = 10000;
+        auto calculationAlgorithm = dai::SpatialLocationCalculatorAlgorithm::MEDIAN;
+        sconfig.calculationAlgorithm = calculationAlgorithm;
+        sconfig.roi = dai::Rect(topLeft, bottomRight);
+        
+        spatialDataCalculator->inputConfig.setWaitForMessage(false);
+        
         // Linking
         left->out.link(stereo->left);
         right->out.link(stereo->right);
         auto xoutDepth = pipeline.create<dai::node::XLinkOut>();            
         xoutDepth->setStreamName("depth");
         stereo->depth.link(xoutDepth->input);
+
+
+        spatialDataCalculator->passthroughDepth.link(xoutDepth->input);
+        stereo->depth.link(spatialDataCalculator->inputDepth);
+
+        spatialDataCalculator->out.link(xoutSpatialData->input);
+        xinSpatialCalcConfig->out.link(spatialDataCalculator->inputConfig);
+
     }
 
     // SYSTEM INFORMATION
@@ -226,6 +260,8 @@ extern "C"
 
             std::shared_ptr<dai::DataOutputQueue> preview;
             std::shared_ptr<dai::DataOutputQueue> depthQueue;
+            std::shared_ptr<dai::DataOutputQueue> spatialCalcQueue;
+            std::shared_ptr<dai::DataInputQueue> spatialCalcConfigInQueue;
             
             // face detector results
             auto detections = device->getOutputQueue("detections",1,false);
@@ -234,7 +270,12 @@ extern "C"
             if (getPreview) preview = device->getOutputQueue("preview",1,false);
             
             // if depth images are requested. All images.
-            if (useDepth) depthQueue = device->getOutputQueue("depth", 1, false);
+            if (useDepth) 
+            {
+                depthQueue = device->getOutputQueue("depth", 8, false);
+                spatialCalcQueue = device->getOutputQueue("spatialData", 8, false);
+                spatialCalcConfigInQueue = device->getInputQueue("spatialCalcConfig");
+            }
             
             int countd;
 
@@ -330,7 +371,14 @@ extern "C"
                         if (getPreview && countd > 0 && drawAllFacesInPreview) cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), cv::Scalar(255,255,255));
                         if (useDepth && count>0)
                         {
-                            auto spatialData = computeDepth(mx,my,frame.rows,depthFrameOrig); 
+                            sconfig.roi = dai::Rect(dai::Point2f(x1,y1), dai::Point2f(x2,y2));
+                            sconfig.calculationAlgorithm = calculationAlgorithm;
+                            dai::SpatialLocationCalculatorConfig cfg;
+                            cfg.addROI(sconfig);
+                            spatialCalcConfigInQueue->send(cfg);
+                
+                            //auto spatialData = computeDepth(mx,my,frame.rows,depthFrameOrig); 
+                            auto spatialData = spatialCalcQueue->get<dai::SpatialLocationCalculatorData>()->getSpatialLocations();
 
                             for(auto depthData : spatialData) {
                                 auto roi = depthData.config.roi;
