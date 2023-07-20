@@ -29,3 +29,15 @@ std::vector<dai::SpatialLocations> getSpatialInfo1(cv::Mat depthFrame, std::vect
 */
 std::vector<dai::SpatialLocations> computeDepth(float mx, float my, int frameRows, cv::Mat depthFrameOrig);
 
+/**
+* Compute 3D position of ROI around image point (mx,my) using depth image
+* Using spatialLocation node
+*
+* @param depthFrame depth frame
+* @param frame rgb frame
+* @param mx x-axis position
+* @param my y-axis position
+* @return mapped rect from rgb to depth
+*
+*/
+dai::Rect prepareComputeDepth(cv::Mat depthFrame, cv::Mat frame, float mx, float my);

@@ -331,6 +331,8 @@ extern "C"
             nlohmann::json facesArr = {};
             nlohmann::json bestFace = {};
 
+            dai::SpatialLocationCalculatorConfig cfg;
+
             if(detData.size() > 0){
                 int i = 0;
                 while (detData[i*7] != -1.0f && i*7 < (int)detData.size()) {
@@ -348,8 +350,40 @@ extern "C"
                     d.x_max = detData[i*7 + 5];
                     d.y_max = detData[i*7 + 6];
                     i++;
-                    dets.push_back(d);
+                    
+                    if (faceScoreThreshold <= d.score) 
+                    {
+                        int x1 = d.x_min * frame.cols;
+                        int y1 = d.y_min * frame.rows;
+                        int x2 = d.x_max * frame.cols;
+                        int y2 = d.y_max * frame.rows;
+                        int mx = x1 + ((x2 - x1) / 2);
+                        int my = y1 + ((y2 - y1) / 2);
+                        
+                        sconfig.roi = prepareComputeDepth(depthFrame,frame,mx,my);
+                        sconfig.calculationAlgorithm = calculationAlgorithm;
+                        cfg.addROI(sconfig);
 
+                        dets.push_back(d);
+                    }
+                }
+            }
+
+
+            // send spatial
+            if (dets.size() > 0) 
+            {
+            
+                spatialCalcConfigInQueue->send(cfg);
+                
+                // get spatial
+                auto spatialData = spatialCalcQueue->get<dai::SpatialLocationCalculatorData>()->getSpatialLocations();
+
+
+                int i = 0;
+                // write jsons
+                for(auto depthData : spatialData) {
+                    auto d = dets[i];
                     nlohmann::json face;
                     face["label"] = d.label;
                     face["score"] = d.score;
@@ -366,48 +400,17 @@ extern "C"
                     face["xcenter"] = mx;
                     face["ycenter"] = my;
                     
-                    if (faceScoreThreshold <= d.score) 
-                    {
-                        if (getPreview && countd > 0 && drawAllFacesInPreview) cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), cv::Scalar(255,255,255));
-                        if (useDepth && count>0)
-                        {
-                            sconfig.roi = dai::Rect(dai::Point2f(x1,y1), dai::Point2f(x2,y2));
-                            sconfig.calculationAlgorithm = calculationAlgorithm;
-                            dai::SpatialLocationCalculatorConfig cfg;
-                            cfg.addROI(sconfig);
-                            spatialCalcConfigInQueue->send(cfg);
-                
-                            //auto spatialData = computeDepth(mx,my,frame.rows,depthFrameOrig); 
-                            auto spatialData = spatialCalcQueue->get<dai::SpatialLocationCalculatorData>()->getSpatialLocations();
+                    if (getPreview && countd > 0 && drawAllFacesInPreview) cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), cv::Scalar(255,255,255));
 
-                            for(auto depthData : spatialData) {
-                                auto roi = depthData.config.roi;
-                                roi = roi.denormalize(depthFrame.cols, depthFrame.rows);
+                    auto roi = depthData.config.roi;
+                    roi = roi.denormalize(depthFrame.cols, depthFrame.rows);
 
-                                face["X"] = (int)depthData.spatialCoordinates.x;
-                                face["Y"] = (int)depthData.spatialCoordinates.y;
-                                face["Z"] = (int)depthData.spatialCoordinates.z;
-                            }
-                        }
-                        facesArr.push_back(face);
-                    }
-                }
-            }
-            int i = 0;
-            for(const auto& d : dets){
-                if (i == maxPos)
-                {                    
-                    int x1 = d.x_min * frame.cols;
-                    int y1 = d.y_min * frame.rows;
-                    int x2 = d.x_max * frame.cols;
-                    int y2 = d.y_max * frame.rows;
-                    int mx = x1 + ((x2 - x1) / 2);
-                    int my = y1 + ((y2 - y1) / 2);
+                    face["X"] = (int)depthData.spatialCoordinates.x;
+                    face["Y"] = (int)depthData.spatialCoordinates.y;
+                    face["Z"] = (int)depthData.spatialCoordinates.z;
+                    facesArr.push_back(face);
 
-                    // m_mx = mx;
-                    // m_my = my;
-
-                    if (faceScoreThreshold <= d.score)
+                    if (i == maxPos)
                     {
                         bestFace["label"] = d.label;
                         bestFace["score"] = d.score;
@@ -418,24 +421,18 @@ extern "C"
                         bestFace["xcenter"] = mx;
                         bestFace["ycenter"] = my;
 
-                        if (useDepth && count>0)
+                        bestFace["X"] = (int)depthData.spatialCoordinates.x;
+                        bestFace["Y"] = (int)depthData.spatialCoordinates.y;
+                        bestFace["Z"] = (int)depthData.spatialCoordinates.z;
+
+                        if (getPreview && countd > 0 && drawBestFaceInPreview) 
                         {
-                            auto spatialData = computeDepth(mx,my,frame.rows,depthFrameOrig); 
-
-                            for(auto depthData : spatialData) {
-                                auto roi = depthData.config.roi;
-                                roi = roi.denormalize(depthFrame.cols, depthFrame.rows);
-
-                                bestFace["X"] = (int)depthData.spatialCoordinates.x;
-                                bestFace["Y"] = (int)depthData.spatialCoordinates.y;
-                                bestFace["Z"] = (int)depthData.spatialCoordinates.z;
-                            }
+                            cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), cv::Scalar(255,255,255));
                         }
-
-                        if (getPreview && countd > 0 && drawBestFaceInPreview) cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), cv::Scalar(255,255,255));
                     }
+
+                    i++;
                 }
-                i++;
             }
 
             if (getPreview && countd>0) toARGB(frame,frameInfo->colorPreviewData);
