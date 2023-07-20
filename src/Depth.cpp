@@ -191,13 +191,32 @@ std::vector<dai::SpatialLocations> computeDepth(float mx, float my, int frameRow
 * @param frame rgb frame
 * @param mx x-axis position
 * @param my y-axis position
+* @param mode 0: crop, 1: letterbox
 * @return mapped rect from rgb to depth
 *
 */
-dai::Rect prepareComputeDepth(cv::Mat depthFrame, cv::Mat frame, float mx, float my)
+dai::Rect prepareComputeDepth(cv::Mat depthFrame, cv::Mat frame, float mx, float my, int mode)
 {
-    float ratio = (float)depthFrame.rows / frame.rows;
-    cv::Point point3 = cv::Point(mx * ratio + ((float)depthFrame.cols/2 - (float)depthFrame.rows/2), my * ratio);
+    cv::Point point3;
+
+    if (mode == 0)
+    {
+        float ratio = (float)depthFrame.rows / frame.rows;
+        point3 = cv::Point(mx * ratio + ((float)depthFrame.cols/2 - (float)depthFrame.rows/2), my * ratio);
+    }
+
+    if (mode == 1)
+    {
+        float ratio = (float)depthFrame.cols/depthFrame.rows;
+        float hcontent = (float)frame.cols / ratio;
+
+        float blackbars_height = (float)frame.cols - hcontent;
+        float eachbar = blackbars_height/2.0f;
+
+        float yadjusted = ((float)my - eachbar) / hcontent;
+
+        point3 = cv::Point(((float)mx / frame.cols)* (float)depthFrame.cols, yadjusted * (float)depthFrame.rows);
+    }
 
     float roi_size = 0.02;
     float tlx = (point3.x/(float)depthFrame.cols)-roi_size;

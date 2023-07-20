@@ -54,8 +54,41 @@ dai::Pipeline createFaceDetectorPipeline(PipelineConfig *config)
     {
         xlinkOut = pipeline.create<dai::node::XLinkOut>();
         xlinkOut->setStreamName("preview");
-        colorCam->setPreviewSize(config->previewSizeWidth, config->previewSizeHeight);
-        colorCam->preview.link(xlinkOut->input);
+        
+        // stretch
+        //colorCam->setPreviewKeepAspectRatio(false);
+        
+        // normal crop <- @todo: add parameter in unity
+        // not for letterbox <- compute on Unity
+        //colorCam->setPreviewSize(config->previewSizeWidth, config->previewSizeHeight);
+        //colorCam->preview.link(xlinkOut->input);
+
+        // letterbox
+        // compute resolution with ipscale
+        int resx = 1920;
+        int resy = 1080;
+        if (config->colorCameraResolution == 1) 
+        {
+            resx = 3840;
+            resy = 2160;
+        }
+        if (config->colorCameraResolution == 2) 
+        {
+            resx = 4056;
+            resy = 3040;
+        }
+        if (config->colorCameraResolution == 3) 
+        {
+            resx = 4208;
+            resy = 3120;
+        }
+
+        if (config->ispScaleF1 > 0 && config->ispScaleF2 > 0)
+        {
+            resx = resx * ((float)config->ispScaleF1/(float)config->ispScaleF2);
+            resy = resy * ((float)config->ispScaleF1/(float)config->ispScaleF2);
+        }
+        colorCam->setPreviewSize(resx,resy);
     }
 
     // Color camera properties            
@@ -68,10 +101,20 @@ dai::Pipeline createFaceDetectorPipeline(PipelineConfig *config)
     if (config->colorCameraColorOrder == 1) colorCam->setColorOrder(dai::ColorCameraProperties::ColorOrder::RGB);
     colorCam->setFps(config->colorCameraFPS);
 
+
+    // letterbox
+    auto manip1 = pipeline.create<dai::node::ImageManip>();
+    manip1->initialConfig.setResizeThumbnail(300,300);
+    colorCam->preview.link(manip1->inputImage);
+
     // neural network
     auto nn1 = pipeline.create<dai::node::NeuralNetwork>();
     nn1->setBlobPath(config->nnPath1);
-    colorCam->preview.link(nn1->input);
+    
+    // not for letterbox
+    manip1->out.link(nn1->input);
+    manip1->out.link(xlinkOut->input);
+    //colorCam->preview.link(nn1->input);
 
     // output of neural network
     auto nnOut = pipeline.create<dai::node::XLinkOut>();
@@ -359,8 +402,9 @@ extern "C"
                         int y2 = d.y_max * frame.rows;
                         int mx = x1 + ((x2 - x1) / 2);
                         int my = y1 + ((y2 - y1) / 2);
-                        
-                        sconfig.roi = prepareComputeDepth(depthFrame,frame,mx,my);
+                       
+                        //sconfig.roi = prepareComputeDepth(depthFrame,frame,mx,my,0);
+                        sconfig.roi = prepareComputeDepth(depthFrame,frame,mx,my,1);
                         sconfig.calculationAlgorithm = calculationAlgorithm;
                         cfg.addROI(sconfig);
 

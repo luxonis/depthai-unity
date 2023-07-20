@@ -37,7 +37,8 @@ std::vector<dai::SpatialLocations> computeDepth(float mx, float my, int frameRow
 * @param frame rgb frame
 * @param mx x-axis position
 * @param my y-axis position
+* @param mode 0: crop, 1: letterbox
 * @return mapped rect from rgb to depth
 *
 */
-dai::Rect prepareComputeDepth(cv::Mat depthFrame, cv::Mat frame, float mx, float my);
+dai::Rect prepareComputeDepth(cv::Mat depthFrame, cv::Mat frame, float mx, float my, int mode);
