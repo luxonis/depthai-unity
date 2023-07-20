@@ -182,3 +182,37 @@ std::vector<dai::SpatialLocations> computeDepth(float mx, float my, int frameRow
 
     return getSpatialInfo1(depthFrameOrig,rois,0,100,50000);
 }
+
+/**
+* Compute 3D position of ROI around image point (mx,my) using depth image
+* Using spatialLocation node
+*
+* @param depthFrame depth frame
+* @param frame rgb frame
+* @param mx x-axis position
+* @param my y-axis position
+* @return mapped rect from rgb to depth
+*
+*/
+dai::Rect prepareComputeDepth(cv::Mat depthFrame, cv::Mat frame, float mx, float my)
+{
+    float ratio = (float)depthFrame.rows / frame.rows;
+    cv::Point point3 = cv::Point(mx * ratio + ((float)depthFrame.cols/2 - (float)depthFrame.rows/2), my * ratio);
+
+    float roi_size = 0.02;
+    float tlx = (point3.x/(float)depthFrame.cols)-roi_size;
+    float tly = (point3.y/(float)depthFrame.rows)-roi_size;
+    if (tlx <= 0.0f) tlx = 0.01f;
+    if (tly <= 0.0f) tly = 0.01f;
+
+    float brx = (point3.x/(float)depthFrame.cols)+roi_size;
+    float bry = (point3.y/(float)depthFrame.rows)+roi_size;
+
+    if (brx >= 1.0f) brx = 0.99f;
+    if (bry >= 1.0f) bry = 0.99f;
+
+    dai::Point2f topLeft(tlx, tly);
+    dai::Point2f bottomRight(brx, bry);
+
+    return dai::Rect(topLeft, bottomRight);
+}
