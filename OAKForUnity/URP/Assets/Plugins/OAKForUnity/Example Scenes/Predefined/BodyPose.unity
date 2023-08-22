@@ -1184,6 +1184,8 @@ MonoBehaviour:
   startPipelineWhenPlay: 1
   pipelines:
   - {fileID: 2947686792172437557}
+  laserDotProjectorBrightness: 0
+  irFloodLightBrightness: 0
   recordResults: 0
   pathToRecord: 
   replayResults: 0
@@ -1325,6 +1327,8 @@ MonoBehaviour:
   deviceRunning: 0
   cameraFPS: 30
   rgbResolution: 0
+  previewMode: 1
+  useSpatialLocator: 0
   monoResolution: 0
   medianFilter: 3
   useIMU: 0

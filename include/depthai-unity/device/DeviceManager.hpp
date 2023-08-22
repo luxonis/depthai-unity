@@ -89,6 +89,12 @@ struct PipelineConfig
     int freq;
     int batchReportThreshold;
     int maxBatchReports;
+
+    // Preview mode
+    int previewMode;
+
+    // Use Spatial Locator for 3D compute
+    bool useSpatialLocator;
 };
 
 /**

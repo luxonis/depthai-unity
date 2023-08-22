@@ -39,7 +39,7 @@ namespace OAKForUnity
         * @param deviceNum Device selection on unity dropdown
         * @returns Json with results or information about device availability. 
         */    
-        private static extern IntPtr BodyPoseResults(out FrameInfo frameInfo, bool getPreview, int width, int height,  bool useDepth, bool drawBodyPoseInPreview, float bodyLandmarkScoreThreshold, bool retrieveInformation, bool useIMU, int deviceNum);
+        private static extern IntPtr BodyPoseResults(out FrameInfo frameInfo, bool getPreview, int width, int height,  bool useDepth, bool drawBodyPoseInPreview, float bodyLandmarkScoreThreshold, bool retrieveInformation, bool useIMU, bool useSpatialLocator, int deviceNum);
 
         
         // Editor attributes
@@ -48,7 +48,9 @@ namespace OAKForUnity
         public RGBResolution rgbResolution;
         private const bool Interleaved = true;
         private const ColorOrder ColorOrderV = ColorOrder.BGR;
-
+        public PreviewMode previewMode;
+        public bool useSpatialLocator;
+        
         [Header("Mono Cameras")] 
         public MonoResolution monoResolution;
 
@@ -58,8 +60,8 @@ namespace OAKForUnity
         public bool retrieveSystemInformation = false;
         public bool drawBodyPoseInPreview;
         public float bodyLandmarkThreshold; 
+        public const bool UseDepth = true;
         private const bool GETPreview = true;
-        private const bool UseDepth = true;
 
         [Header("Body Pose Results")] 
         public Texture2D colorTexture;
@@ -111,6 +113,9 @@ namespace OAKForUnity
             // Need it for color camera preview
             config.previewSizeHeight = 192; // 192 for lightning model, 256 for thunder model
             config.previewSizeWidth = 192;
+
+            config.previewMode = (int) previewMode;
+            config.useSpatialLocator = useSpatialLocator;
             
             // Mono camera
             config.monoLCameraResolution = (int) monoResolution;
@@ -163,7 +168,7 @@ namespace OAKForUnity
                 // Plugin lib pipeline results implementation
                 bodyPoseResults = Marshal.PtrToStringAnsi(BodyPoseResults(out frameInfo, GETPreview, 300, 300, UseDepth, drawBodyPoseInPreview, bodyLandmarkThreshold, retrieveSystemInformation,
                     useIMU,
-                    (int) device.deviceNum));
+                    useSpatialLocator, (int) device.deviceNum));
             }
             // if replay read results from file
             else
