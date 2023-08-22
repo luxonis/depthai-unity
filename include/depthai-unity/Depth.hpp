@@ -3,6 +3,9 @@
 // std
 #include <thread>
 
+extern dai::SpatialLocationCalculatorConfigData sconfig;
+extern dai::SpatialLocationCalculatorAlgorithm calculationAlgorithm;
+
 /**
 * Compute spatial info
 *

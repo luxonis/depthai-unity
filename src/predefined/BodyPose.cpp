@@ -32,7 +32,6 @@
 
 #include "nlohmann/json.hpp"
 
-
 cv::Scalar ColorForLandmark(int landm)
 {
     cv::Scalar color;
@@ -46,6 +45,34 @@ cv::Scalar ColorForLandmark(int landm)
 
 int pad = 192;
 int mframe = 0;
+
+void SetCameraPreviewSize(std::shared_ptr<dai::node::ColorCamera> colorCam, PipelineConfig *config)
+{
+    int resx = 1920;
+    int resy = 1080;
+    if (config->colorCameraResolution == 1) 
+    {
+        resx = 3840;
+        resy = 2160;
+    }
+    if (config->colorCameraResolution == 2) 
+    {
+        resx = 4056;
+        resy = 3040;
+    }
+    if (config->colorCameraResolution == 3) 
+    {
+        resx = 4208;
+        resy = 3120;
+    }
+
+    if (config->ispScaleF1 > 0 && config->ispScaleF2 > 0)
+    {
+        resx = resx * ((float)config->ispScaleF1/(float)config->ispScaleF2);
+        resy = resy * ((float)config->ispScaleF1/(float)config->ispScaleF2);
+    }
+    colorCam->setPreviewSize(resx,resy);
+}
 
 /**
 * Pipeline creation based on streams template
@@ -66,9 +93,18 @@ dai::Pipeline createBodyPosePipeline(PipelineConfig *config)
     {
         xlinkOut = pipeline.create<dai::node::XLinkOut>();
         xlinkOut->setStreamName("preview");
-        // pad,pad
-        colorCam->setPreviewSize(config->previewSizeWidth, config->previewSizeHeight);
-        colorCam->preview.link(xlinkOut->input);
+
+        // letterbox
+        // compute resolution with ipscale
+        if (config->previewMode == 1)
+        {
+            SetCameraPreviewSize(colorCam,config);
+        }
+        else 
+        {
+            colorCam->setPreviewSize(config->previewSizeWidth, config->previewSizeHeight);
+            colorCam->preview.link(xlinkOut->input);
+        }
     }
 
     // Color camera properties            
@@ -84,7 +120,19 @@ dai::Pipeline createBodyPosePipeline(PipelineConfig *config)
     // neural network
     auto nn1 = pipeline.create<dai::node::NeuralNetwork>();
     nn1->setBlobPath(config->nnPath1);
-    colorCam->preview.link(nn1->input);
+
+    // letterbox
+    if (config->previewMode == 1)
+    {
+        auto manip1 = pipeline.create<dai::node::ImageManip>();
+        manip1->initialConfig.setResizeThumbnail(192,192);
+        colorCam->preview.link(manip1->inputImage);
+    
+        manip1->out.link(nn1->input);
+        //manip1->out.link(xlinkOut->input);
+        nn1->passthrough.link(xlinkOut->input);
+    }
+    else colorCam->preview.link(nn1->input);
 
     // output of neural network
     auto nnOut = pipeline.create<dai::node::XLinkOut>();
@@ -126,12 +174,42 @@ dai::Pipeline createBodyPosePipeline(PipelineConfig *config)
         if (config->medianFilter == 2) stereo->initialConfig.setMedianFilter(dai::MedianFilter::KERNEL_5x5);
         if (config->medianFilter == 3) stereo->initialConfig.setMedianFilter(dai::MedianFilter::KERNEL_7x7);
 
+        stereo->setDefaultProfilePreset(dai::node::StereoDepth::PresetMode::HIGH_DENSITY);
+
         // Linking
         left->out.link(stereo->left);
         right->out.link(stereo->right);
         auto xoutDepth = pipeline.create<dai::node::XLinkOut>();            
         xoutDepth->setStreamName("depth");
         stereo->depth.link(xoutDepth->input);
+        
+        if (config->useSpatialLocator)
+        {
+            // Spatial Locator
+            auto spatialDataCalculator = pipeline.create<dai::node::SpatialLocationCalculator>();
+            auto xoutSpatialData = pipeline.create<dai::node::XLinkOut>();
+            auto xinSpatialCalcConfig = pipeline.create<dai::node::XLinkIn>();
+
+            xoutSpatialData->setStreamName("spatialData");
+            xinSpatialCalcConfig->setStreamName("spatialCalcConfig");
+
+            dai::Point2f topLeft(0.4f, 0.4f);
+            dai::Point2f bottomRight(0.6f, 0.6f);
+
+            sconfig.depthThresholds.lowerThreshold = 100;
+            sconfig.depthThresholds.upperThreshold = 10000;
+            auto calculationAlgorithm = dai::SpatialLocationCalculatorAlgorithm::MEDIAN;
+            sconfig.calculationAlgorithm = calculationAlgorithm;
+            sconfig.roi = dai::Rect(topLeft, bottomRight);
+            
+            spatialDataCalculator->inputConfig.setWaitForMessage(false);
+
+            spatialDataCalculator->passthroughDepth.link(xoutDepth->input);
+            stereo->depth.link(spatialDataCalculator->inputDepth);
+
+            spatialDataCalculator->out.link(xoutSpatialData->input);
+            xinSpatialCalcConfig->out.link(spatialDataCalculator->inputConfig);
+        }
     }
 
     // SYSTEM INFORMATION
@@ -209,7 +287,7 @@ extern "C"
     * @returns Json with results or information about device availability. 
     */    
     
-    EXPORT_API const char* BodyPoseResults(FrameInfo *frameInfo, bool getPreview, int width, int height, bool useDepth, bool drawBodyPoseInPreview, float bodyLandmarkScoreThreshold, bool retrieveInformation, bool useIMU, int deviceNum)
+    EXPORT_API const char* BodyPoseResults(FrameInfo *frameInfo, bool getPreview, int width, int height, bool useDepth, bool drawBodyPoseInPreview, float bodyLandmarkScoreThreshold, bool retrieveInformation, bool useIMU, bool useSpatialLocator, int deviceNum)
     {
         using namespace std;
         using namespace std::chrono;
@@ -290,9 +368,17 @@ extern "C"
             int count;
             vector<std::shared_ptr<dai::ImgFrame>> imgDepthFrames;
             std::shared_ptr<dai::ImgFrame> imgDepthFrame;
-            
+            std::shared_ptr<dai::DataOutputQueue> spatialCalcQueue;
+            std::shared_ptr<dai::DataInputQueue> spatialCalcConfigInQueue;
+
             if (useDepth)
             {            
+                if (useSpatialLocator)
+                {
+                    spatialCalcQueue = device->getOutputQueue("spatialData", 1, false);
+                    spatialCalcConfigInQueue = device->getInputQueue("spatialCalcConfig");
+                }
+
                 imgDepthFrames = depthQueue->tryGetAll<dai::ImgFrame>();
                 count = imgDepthFrames.size();
                 if (count > 0)
@@ -306,7 +392,8 @@ extern "C"
             }
 
             nlohmann::json bodyPose = {};
-            
+            dai::SpatialLocationCalculatorConfig cfg;
+
             if(detData.size() > 0){
                 int pos = 0;
 
@@ -314,13 +401,38 @@ extern "C"
                 
                 for (int i=0; i<(int)detData.size(); i+=3)
                 {
-                    landmarks_y[pos] = (int) (detData[i] * frameSize);
-                    landmarks_x[pos] = (int) (detData[i+1] * frameSize);
+                    landmarks_y[pos] = (int) (detData[i] * frameSize);//frame.rows);
+                    landmarks_x[pos] = (int) (detData[i+1] * frameSize);//frame.cols);
                     scores[pos] = detData[i+2];
+
+                    if (useSpatialLocator)
+                    {
+                        sconfig.roi = prepareComputeDepth(depthFrame,frame,landmarks_x[pos],landmarks_y[pos],1);
+                        sconfig.calculationAlgorithm = calculationAlgorithm;
+                        cfg.addROI(sconfig);
+                    }
+
                     pos++;
                 }
 
                 std::vector<int> pushed;
+
+                
+                if (useDepth && pos>0 && useSpatialLocator) 
+                {
+                    spatialCalcConfigInQueue->send(cfg);
+                
+                    // get spatial
+                    auto spatialData = spatialCalcQueue->get<dai::SpatialLocationCalculatorData>()->getSpatialLocations();
+                
+                    int i = 0;
+                    for(auto depthData : spatialData) {
+                        landmarks_xpos[i] = (int)depthData.spatialCoordinates.x;
+                        landmarks_ypos[i] = (int)depthData.spatialCoordinates.y;
+                        landmarks_zpos[i] = (int)depthData.spatialCoordinates.z;
+                        i++;
+                    }
+                }
 
                 for (int i=0; i<16; i++)
                 {
@@ -346,20 +458,32 @@ extern "C"
 
                             if (useDepth && count>0)
                             {
-                                auto spatialData = computeDepth(landmarks_x[LINES_BODY[i][0]],landmarks_y[LINES_BODY[i][0]],frame.rows,depthFrameOrig); 
-                                
-                                for(auto depthData : spatialData) 
+                                if (useSpatialLocator)
                                 {
-                                    auto roi = depthData.config.roi;
-                                    roi = roi.denormalize(depthFrame.cols, depthFrame.rows);
-
-                                    landmarks_xpos[LINES_BODY[i][0]] = (int)depthData.spatialCoordinates.x;
-                                    landmarks_ypos[LINES_BODY[i][0]] = (int)depthData.spatialCoordinates.y;
-                                    landmarks_zpos[LINES_BODY[i][0]] = (int)depthData.spatialCoordinates.z;
-
                                     landmarkJson["location.x"] = landmarks_xpos[LINES_BODY[i][0]];
                                     landmarkJson["location.y"] = landmarks_ypos[LINES_BODY[i][0]];
                                     landmarkJson["location.z"] = landmarks_zpos[LINES_BODY[i][0]];
+                                }
+                                else
+                                {
+                                    auto spatialData = computeDepth(landmarks_x[LINES_BODY[i][0]],landmarks_y[LINES_BODY[i][0]],frame.rows,depthFrameOrig);
+                                    /*auto depthData = spatialData[LINES_BODY[i][0]]; 
+                                    auto roi = depthData.config.roi;
+                                    roi = roi.denormalize(depthFrame.cols, depthFrame.rows);*/
+                                    
+                                    for(auto depthData : spatialData) 
+                                    {
+                                        auto roi = depthData.config.roi;
+                                        roi = roi.denormalize(depthFrame.cols, depthFrame.rows);
+
+                                        landmarks_xpos[LINES_BODY[i][0]] = (int)depthData.spatialCoordinates.x;
+                                        landmarks_ypos[LINES_BODY[i][0]] = (int)depthData.spatialCoordinates.y;
+                                        landmarks_zpos[LINES_BODY[i][0]] = (int)depthData.spatialCoordinates.z;
+
+                                        landmarkJson["location.x"] = landmarks_xpos[LINES_BODY[i][0]];
+                                        landmarkJson["location.y"] = landmarks_ypos[LINES_BODY[i][0]];
+                                        landmarkJson["location.z"] = landmarks_zpos[LINES_BODY[i][0]];
+                                    }
                                 }
                             }
                             bodyPose.push_back(landmarkJson);
@@ -375,21 +499,32 @@ extern "C"
 
                             if (useDepth && count>0)
                             {
-                                auto spatialData = computeDepth(landmarks_x[LINES_BODY[i][1]],landmarks_y[LINES_BODY[i][1]],frame.rows,depthFrameOrig); 
-                                
-                                for(auto depthData : spatialData) 
+                                if (useSpatialLocator)
                                 {
-                                    auto roi = depthData.config.roi;
-                                    roi = roi.denormalize(depthFrame.cols, depthFrame.rows);
-                                    landmarks_xpos[LINES_BODY[i][1]] = (int)depthData.spatialCoordinates.x;
-                                    landmarks_ypos[LINES_BODY[i][1]] = (int)depthData.spatialCoordinates.y;
-                                    landmarks_zpos[LINES_BODY[i][1]] = (int)depthData.spatialCoordinates.z;
-
                                     landmarkJson["location.x"] = landmarks_xpos[LINES_BODY[i][1]];
                                     landmarkJson["location.y"] = landmarks_ypos[LINES_BODY[i][1]];
                                     landmarkJson["location.z"] = landmarks_zpos[LINES_BODY[i][1]];
                                 }
-                                
+                                else
+                                {
+                                    auto spatialData = computeDepth(landmarks_x[LINES_BODY[i][1]],landmarks_y[LINES_BODY[i][1]],frame.rows,depthFrameOrig); 
+                                    /*auto depthData = spatialData[LINES_BODY[i][1]]; 
+                                    auto roi = depthData.config.roi;
+                                    roi = roi.denormalize(depthFrame.cols, depthFrame.rows);*/
+
+                                    for(auto depthData : spatialData) 
+                                    {
+                                        auto roi = depthData.config.roi;
+                                        roi = roi.denormalize(depthFrame.cols, depthFrame.rows);
+                                        landmarks_xpos[LINES_BODY[i][1]] = (int)depthData.spatialCoordinates.x;
+                                        landmarks_ypos[LINES_BODY[i][1]] = (int)depthData.spatialCoordinates.y;
+                                        landmarks_zpos[LINES_BODY[i][1]] = (int)depthData.spatialCoordinates.z;
+
+                                        landmarkJson["location.x"] = landmarks_xpos[LINES_BODY[i][1]];
+                                        landmarkJson["location.y"] = landmarks_ypos[LINES_BODY[i][1]];
+                                        landmarkJson["location.z"] = landmarks_zpos[LINES_BODY[i][1]];
+                                    }
+                                }                                
                             }
                             bodyPose.push_back(landmarkJson);
                         }

@@ -111,6 +111,12 @@ namespace OAKForUnity
             public int freq;
             public int batchReportThreshold;
             public int maxBatchReports;
+            
+            // Preview mode
+            public int previewMode;
+            
+            // Use SpatialLocator node
+            public bool useSpatialLocator;
         };
 
         // public enums
@@ -157,6 +163,13 @@ namespace OAKForUnity
             KERNEL_7X7,
         }
 
+        // Preview mode
+        public enum PreviewMode
+        {
+            CROP,
+            LETTERBOX,
+        }
+        
         // public attributes
         
         // process mode: Multithread or UnityThread
