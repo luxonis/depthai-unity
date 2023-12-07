@@ -53,7 +53,8 @@ dai::Pipeline createStreamsPipeline(PipelineConfig *config)
         xlinkOut = pipeline.create<dai::node::XLinkOut>();
         xlinkOut->setStreamName("preview");
         colorCam->setPreviewSize(config->previewSizeWidth, config->previewSizeHeight);
-        colorCam->preview.link(xlinkOut->input);
+        //colorCam->preview.link(xlinkOut->input);
+        colorCam->video.link(xlinkOut->input);
     }
 
     // Color camera properties            
@@ -249,9 +250,7 @@ extern "C"
                 if (countd > 0) {
                     auto imgFrame = imgFrames[countd-1];
                     if(imgFrame){
-                        //printf("Frame - w: %d, h: %d\n", imgFrame->getWidth(), imgFrame->getHeight());
-                        frame = toMat(imgFrame->getData(), imgFrame->getWidth(), imgFrame->getHeight(), 3, 1);
-
+                        frame = imgFrame->getCvFrame();
                         toARGB(frame,frameInfo->colorPreviewData);
                     }
                 }

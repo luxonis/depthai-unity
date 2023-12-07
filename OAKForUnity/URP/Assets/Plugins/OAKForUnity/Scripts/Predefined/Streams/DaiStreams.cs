@@ -89,7 +89,7 @@ namespace OAKForUnity
         // Init textures. Each PredefinedBase implementation handles textures. Decoupled from external viz (Canvas, VFX, ...)
         void InitTexture()
         {
-            colorTexture = new Texture2D(300, 300, TextureFormat.ARGB32, false);
+            colorTexture = new Texture2D(1920, 1080, TextureFormat.ARGB32, false);
             _colorPixel32 = colorTexture.GetPixels32();
             //Pin pixel32 array
             _colorPixelHandle = GCHandle.Alloc(_colorPixel32, GCHandleType.Pinned);
