@@ -1,9 +1,9 @@
 # OAK For Unity
 
 <p align="center">
-  <img src="docs/img/oak_playground.gif" width="47%" />
+  <img src="img/oak_playground.gif" width="47%" />
   &nbsp; &nbsp;
-  <img src="docs/img/depthai-unity-plugin-face-detector.gif" width="50%" />
+  <img src="img/depthai-unity-plugin-face-detector.gif" width="50%" />
   &nbsp; &nbsp;
   <br>
 
@@ -59,7 +59,7 @@
 <br>
 Now it's much easier to navigate throught the demos. Go to menu on top: "OAK For Unity"->"Example scenes" and hit play
 
-![detailmenu](docs/img/detail-menu.png)
+![detailmenu](img/detail-menu.png)
 
 **[What is OAK For Unity? (Click here for more detail)](docs/What_is.md)**
 
