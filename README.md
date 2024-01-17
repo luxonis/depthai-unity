@@ -19,29 +19,35 @@
   <img src="docs/img/oak_playground.gif" width="100%" />
   <br>
 
-### Versatile Application Support: Enables a broad range of applications, from interactive installations and games to health and sports monitoring, VR experiences, and more
+### Versatile Application Support 
+Enables a broad range of applications, from interactive installations and games to health and sports monitoring, VR experiences, and more
 
 <p align="center">
   <img src="docs/img/depthai-unity-plugin-face-detector.gif" width="100%" />
   <br>
 
 
-### Ready-to-Use AI Models: Provides a high-level API with a variety of pretrained models for rapid deployment of AI features like face and emotion recognition, and object detection.
+### Ready-to-Use AI Models 
+Provides a high-level API with a variety of pretrained models for rapid deployment of AI features like face and emotion recognition, and object detection.
 
 <p align="center">
   <img src="docs/img/emotion-example.png" width="100%" />
   <br>
 
 
-### Comprehensive Sensor Data Access: Provides access to OAK device streams including RGB, mono images, depth, and IMU data, enhancing the sensory input for Unity developers
+### Comprehensive Sensor Data Access
+Provides access to OAK device streams including RGB, mono images, depth, and IMU data, enhancing the sensory input for Unity developers
 
 <p align="center">
   <img src="docs/img/streams.png" width="100%" />
   <br>
 
 
-### Streamlined Integration: Easy installation from the GitHub repository with Unity project example, and coming soon on the Unity Asset Store.
+### Streamlined Integration
+Easy installation from the GitHub repository with Unity project example, and coming soon on the Unity Asset Store.
 
 ---
 
 Do you want to know more details and get started ? Check information [here](docs/README.md)
+
+# Get started
