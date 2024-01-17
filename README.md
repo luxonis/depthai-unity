@@ -49,3 +49,5 @@ Easy installation from the GitHub repository with Unity project example, and com
 ---
 
 Do you want to know more details and get started ? Check information [here](docs/README.md)
+
+# Get started
