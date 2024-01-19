@@ -25,7 +25,7 @@
 #include "depthai/depthai.hpp"
 #include "depthai/device/Device.hpp"
 
-#include "depthai-unity/predefined/FaceEmotion.hpp"
+#include "depthai-unity/predefined/HeadPose.hpp"
 
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
@@ -38,7 +38,7 @@
 * @param config pipeline configuration 
 * @returns pipeline 
 */
-dai::Pipeline createFaceEmotionPipeline(PipelineConfig *config)
+dai::Pipeline createHeadPosePipeline(PipelineConfig *config)
 {
     
     dai::Pipeline pipeline;
@@ -88,7 +88,7 @@ dai::Pipeline createFaceEmotionPipeline(PipelineConfig *config)
     nn2->out.link(nnOut2->input);
 
     // Depth
-    if (config->confidenceThreshold > 0)
+    /*if (config->confidenceThreshold > 0)
     {
         auto left = pipeline.create<dai::node::MonoCamera>();
         auto right = pipeline.create<dai::node::MonoCamera>();
@@ -128,7 +128,7 @@ dai::Pipeline createFaceEmotionPipeline(PipelineConfig *config)
         auto xoutDepth = pipeline.create<dai::node::XLinkOut>();            
         xoutDepth->setStreamName("depth");
         stereo->depth.link(xoutDepth->input);
-    }
+    }*/
 
     // SYSTEM INFORMATION
     if (config->rate > 0.0f)
@@ -178,9 +178,9 @@ extern "C"
     * @param config pipeline configuration 
     * @returns pipeline 
     */
-    EXPORT_API bool InitFaceEmotion(PipelineConfig *config)
+    EXPORT_API bool InitHeadPose(PipelineConfig *config)
     {
-        dai::Pipeline pipeline = createFaceEmotionPipeline(config);
+        dai::Pipeline pipeline = createHeadPosePipeline(config);
 
         // If deviceId is empty .. just pick first available device
         bool res = false;
@@ -205,10 +205,9 @@ extern "C"
 
     /**
     * Example of json returned
-    * { "faces": [ {"label":0,"score":0.0,"xmin":0.0,"ymin":0.0,"xmax":0.0,"ymax":0.0,"xcenter":0.0,"ycenter":0.0},{"label":1,"score":1.0,"xmin":0.0,"ymin":0.0,"xmax":0.0,* "ymax":0.0,"xcenter":0.0,"ycenter":0.0}],"best":{"label":1,"score":1.0,"xmin":0.0,"ymin":0.0,"xmax":0.0,"ymax":0.0,"xcenter":0.0,"ycenter":0.0},"fps":0.0}
     */
 
-    EXPORT_API const char* FaceEmotionResults(FrameInfo *frameInfo, bool getPreview, int width, int height, bool drawBestFaceInPreview, bool drawAllFacesInPreview, float faceScoreThreshold, bool useDepth, bool retrieveInformation, bool useIMU, int deviceNum)
+    EXPORT_API const char* HeadPoseResults(FrameInfo *frameInfo, bool getPreview, int width, int height, bool drawBestFaceInPreview, bool drawAllFacesInPreview, float faceScoreThreshold, bool useDepth, bool retrieveInformation, bool useIMU, int deviceNum)
     {
         using namespace std;
         using namespace std::chrono;
@@ -234,9 +233,6 @@ extern "C"
             // other images
             cv::Mat depthFrame, depthFrameOrig, dispFrameOrig, dispFrame, monoRFrameOrig, monoRFrame, monoLFrameOrig, monoLFrame;
 
-            // {"best":{"label":1,"score":1.0,"xmin":0.0,"ymin":0.0,"xmax":0.0,"ymax":0.0,"xcenter":0.0,"ycenter":0.0},"emotion":{"happy":0.0,"sad":0.0,"surprise":0.0,.....}}
-            nlohmann::json faceEmotionJson;
-
             std::shared_ptr<dai::DataOutputQueue> preview;
             std::shared_ptr<dai::DataOutputQueue> depthQueue;
 
@@ -250,7 +246,7 @@ extern "C"
             auto landm_out = device->getOutputQueue("landm_out");
 
             // if depth images are requested. All images.
-            if (useDepth) depthQueue = device->getOutputQueue("depth", 1, false);
+            //if (useDepth) depthQueue = device->getOutputQueue("depth", 1, false);
             
             if (getPreview)
             {
@@ -281,27 +277,12 @@ extern "C"
             int maxPos = 0;
 
             nlohmann::json facesArr = {};
-            nlohmann::json emotionsArr = {};
             nlohmann::json bestFace = {};
-            nlohmann::json bestFaceEmotion = {};
+            nlohmann::json headPoseArr = {};
+            nlohmann::json headPoseJson = {};
 
-            int count;
             vector<std::shared_ptr<dai::ImgFrame>> imgDepthFrames;
             std::shared_ptr<dai::ImgFrame> imgDepthFrame;
-
-            if (useDepth)
-            {            
-                imgDepthFrames = depthQueue->tryGetAll<dai::ImgFrame>();
-                count = imgDepthFrames.size();
-                if (count > 0)
-                {
-                    imgDepthFrame = imgDepthFrames[count-1];
-                    depthFrameOrig = imgDepthFrame->getFrame();
-                    cv::normalize(depthFrameOrig, depthFrame, 255, 0, cv::NORM_INF, CV_8UC1);
-                    cv::equalizeHist(depthFrame, depthFrame);
-                    cv::cvtColor(depthFrame, depthFrame, cv::COLOR_GRAY2BGR);
-                }
-            }
             
             if(detData.size() > 0){
                 int i = 0;
@@ -375,65 +356,71 @@ extern "C"
                         faceFrame = frame(cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)));
                     }
 
-                    // ------------------------- SECOND STAGE - FACE EMOTION
+                    // ------------------------- SECOND STAGE - HEAD POSE
 
                     dai::NNData data_in;
 
                     auto tensor = std::make_shared<dai::RawBuffer>();
                     if (faceFrame.cols > 0 && faceFrame.rows > 0)
                     {
-                        cv::Mat frame2 = resizeKeepAspectRatio(faceFrame, cv::Size(64,64), cv::Scalar(0));
+                        float yaw, pitch, roll;
+                        cv::Mat frame2 = resizeKeepAspectRatio(faceFrame, cv::Size(60,60), cv::Scalar(0));
 
                         toPlanar(frame2, tensor->data);
 
                         landm_in->send(tensor);
 
                         auto detface = landm_out->get<dai::NNData>();
-                        std::vector<float> detfaceYData = detface->getFirstLayerFp16();
                         
-                        nlohmann::json faceEmotion;
+                        nlohmann::json headPose;
 
+                        std::vector<float> detfaceYData = detface->getLayerFp16("angle_y_fc");
                         if (detfaceYData.size() > 0)
                         {
-                            if (i == maxPos)
-                            {
-                                bestFaceEmotion["neutral"] = detfaceYData[0];
-                                bestFaceEmotion["happy"] = detfaceYData[1];
-                                bestFaceEmotion["sad"] = detfaceYData[2];
-                                bestFaceEmotion["surprise"] = detfaceYData[3];
-                                bestFaceEmotion["anger"] = detfaceYData[4];
+                            if(detfaceYData.size() > 0){
+                                yaw = detfaceYData[0];
+                            }
+                            std::vector<float> detfacePData = detface->getLayerFp16("angle_p_fc");
+                            if(detfacePData.size() > 0){
+                                pitch = detfacePData[0];
+                            }
+                            std::vector<float> detfaceRData = detface->getLayerFp16("angle_r_fc");
+                            if(detfaceRData.size() > 0){
+                                roll = detfaceRData[0];
                             }
 
-                            faceEmotion["neutral"] = detfaceYData[0];
-                            faceEmotion["happy"] = detfaceYData[1];
-                            faceEmotion["sad"] = detfaceYData[2];
-                            faceEmotion["surprise"] = detfaceYData[3];
-                            faceEmotion["anger"] = detfaceYData[4];
-                        }
+                            headPose["yaw"] = yaw;
+                            headPose["roll"] = roll;
+                            headPose["pitch"] = pitch;
+                            
+                            roll = roll * 3.141596 / 180;
+                            pitch = pitch * 3.141596 / 180;
+                            yaw = -(yaw * 3.141596 / 180); 
 
-                        if (useDepth && count>0)
-                        {
-                            auto spatialData = computeDepth(mx,my,frame.rows,depthFrameOrig); 
+                            if (drawBestFaceInPreview)
+                            {
+                                int size = 50;
+                                int origin0 = (x2 - x1)/2;
+                                int origin1 = (y2 - y1)/2;
+                                // X axis (red)
+                                int rx1 = size * (cos(yaw) * cos(roll)) + origin0;
+                                int ry1 = size * (cos(pitch) * sin(roll) + cos(roll) * sin(pitch) * sin(yaw)) + origin1;
+                                cv::line(frame, cv::Point(origin0, origin1), cv::Point(rx1, ry1), cv::Scalar(0, 0, 255), 3);
 
-                            for(auto depthData : spatialData) {
-                                auto roi = depthData.config.roi;
-                                roi = roi.denormalize(depthFrame.cols, depthFrame.rows);
+                                // Y axis (green)
+                                int rx2 = size * (-cos(yaw) * sin(roll)) + origin0;
+                                int ry2 = size * (-cos(pitch) * cos(roll) - sin(pitch) * sin(yaw) * sin(roll)) + origin1;
+                                cv::line(frame, cv::Point(origin0, origin1), cv::Point(rx2, ry2), cv::Scalar(0, 255, 0), 3);
 
-                                if (i == maxPos)
-                                {
-                                    bestFace["X"] = (int)depthData.spatialCoordinates.x;
-                                    bestFace["Y"] = (int)depthData.spatialCoordinates.y;
-                                    bestFace["Z"] = (int)depthData.spatialCoordinates.z;
-                                }
-
-                                face["X"] = (int)depthData.spatialCoordinates.x;
-                                face["Y"] = (int)depthData.spatialCoordinates.y;
-                                face["Z"] = (int)depthData.spatialCoordinates.z;
+                                // Z axis (blue)
+                                int rx3 = size * (-sin(yaw)) + origin0;
+                                int ry3 = size * (cos(yaw) * sin(pitch)) + origin1;
+                                cv::line(frame, cv::Point(origin0, origin1), cv::Point(rx3,ry3), cv::Scalar(255, 0, 0), 2);
                             }
                         }
 
                         facesArr.push_back(face);
-                        emotionsArr.push_back(faceEmotion);
+                        headPoseArr.push_back(headPose);
 
                         if (drawBestFaceInPreview) cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), cv::Scalar(255,255,255));
                     }
@@ -450,19 +437,18 @@ extern "C"
             }
 
             // SYSTEM INFORMATION
-            if (retrieveInformation) faceEmotionJson["sysinfo"] = GetDeviceInfo(device);        
+            if (retrieveInformation) headPoseJson["sysinfo"] = GetDeviceInfo(device);        
             // IMU
-            if (useIMU) faceEmotionJson["imu"] = GetIMU(device);
+            if (useIMU) headPoseJson["imu"] = GetIMU(device);
 
             // RETURN JSON
-            faceEmotionJson["best"] = bestFace;
-            faceEmotionJson["bestFaceEmotion"] = bestFaceEmotion;
-            faceEmotionJson["faces"] = facesArr;
-            faceEmotionJson["emotions"] = emotionsArr;
+            headPoseJson["best"] = bestFace;
+            headPoseJson["faces"] = facesArr;
+            headPoseJson["headPoses"] = headPoseArr;
 
-            char* ret = (char*)::malloc(strlen(faceEmotionJson.dump().c_str())+1);
-            ::memcpy(ret, faceEmotionJson.dump().c_str(),strlen(faceEmotionJson.dump().c_str()));
-            ret[strlen(faceEmotionJson.dump().c_str())] = 0;
+            char* ret = (char*)::malloc(strlen(headPoseJson.dump().c_str())+1);
+            ::memcpy(ret, headPoseJson.dump().c_str(),strlen(headPoseJson.dump().c_str()));
+            ret[strlen(headPoseJson.dump().c_str())] = 0;
 
             return ret;
         }
