@@ -181,6 +181,9 @@ namespace OAKForUnity
         // True if pipeline is running on device
         [HideInInspector] public bool deviceRunning;
         
+        public bool useUnityBridge;
+        public TcpClientBehaviour tcpClientBehaviour;
+        
         // Thread and events in case of multithread process mode
         private Thread _worker;
         private readonly AutoResetEvent _stopEvent = new AutoResetEvent(false);
