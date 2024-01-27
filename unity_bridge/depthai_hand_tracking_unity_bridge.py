@@ -114,23 +114,23 @@ while True:
     # -- UB
     # Prepare data for serialization
     test_object.arr1 = [unity_bridge.count]
-    print(len(hands))
+    #print(len(hands))
     if len(hands)==1:
         names = ['hand_0','res2']
         objects = [hands[0],test_object]
         configs = [['pd_score','pd_box','rotation','lm_score','landmarks','handedness','label'],['result','arr1']]  # List of fields to serialize for each object
-    if len(hands)==2:
+    elif len(hands)==2:
         names = ['hand_0','hand_1','res2']
         objects = [hands[0],hands[1],test_object]
         configs = [['pd_score','pd_box','rotation','lm_score','landmarks','handedness','label'],['pd_score','pd_box','rotation','lm_score','landmarks','handedness','label'],['result','arr1']]  # List of fields to serialize for each object
-    #if len(hands)==0:
-    #    names = ['res2']
-    #    objects = [test_object]
-    #    configs = [['result','arr1']]  # List of fields to serialize for each object
+    else:
+        names = ['res2']
+        objects = [test_object]
+        configs = [['result','arr1']]  # List of fields to serialize for each object
 
     # Send data back to Unity
-        #frame_ub = cv2.resize(frame,(576,324))
-        unity_bridge.send(frame, names, objects, configs)
+    frame_ub = cv2.resize(frame,(576,324))
+    unity_bridge.send(frame_ub, names, objects, configs)
     # -- UB
 
     key = renderer.waitKey(delay=1)
