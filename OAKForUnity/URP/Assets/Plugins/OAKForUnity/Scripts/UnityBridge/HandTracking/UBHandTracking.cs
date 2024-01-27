@@ -32,7 +32,14 @@ namespace OAKForUnity
         [Header("Results")] 
         public Texture2D colorTexture;
         public string ubHandTrackingResults;
+        public GameObject light;
+        public Vector3[] landmarks;
+        public GameObject[] skeleton;
+        public GameObject[] cylinders;
+        public Vector2[] connections;
         public int countData;
+
+        private float _oldRotation;
         
         // private attributes
         private Color32[] _colorPixel32;
@@ -62,6 +69,7 @@ namespace OAKForUnity
             frameInfo.colorPreviewData = _colorPixelPtr;
 
             countData = -1;
+            _oldRotation = 0f;
         }
 
         // Prepare Pipeline Configuration and call pipeline init implementation
@@ -158,6 +166,22 @@ namespace OAKForUnity
                 if (countData+2 < arr1[0]) Debug.LogError("MISSING DATA "+countData+ " "+arr1[0]);
                 countData = arr1[0];
             }
+            
+            // PROCESS HANDS INFO
+            var hand0 = json["hand_0"];
+
+            if (hand0 != null)
+            {
+                if (hand0["gesture"] == "FIST")
+                {
+                    float rotation = (float) hand0["rotation"];
+                    rotation *= 0.1f;
+                    light.transform.Rotate(Vector3.right, rotation);
+                }
+
+            }
+
+
         }
     }
 }
