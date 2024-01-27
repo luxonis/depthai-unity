@@ -65,6 +65,8 @@ Easy installation from the GitHub repository with Unity project example, and com
 
 - [Contributions](#contributions-and-acknowledgments)
 
+- [Community projects](#community-projects)
+
 - [License](#license)
 
 # Get started
