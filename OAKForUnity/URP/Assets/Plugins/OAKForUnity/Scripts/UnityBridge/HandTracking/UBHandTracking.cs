@@ -5,7 +5,7 @@ using SimpleJSON;
 
 namespace OAKForUnity
 {
-    public class UBTest : PredefinedBase
+    public class UBHandTracking : PredefinedBase
     {
         // For future compatibility between UB and standard C++ plugin
         
@@ -31,7 +31,7 @@ namespace OAKForUnity
 
         [Header("Results")] 
         public Texture2D colorTexture;
-        public string ubTestResults;
+        public string ubHandTrackingResults;
         public int countData;
         
         // private attributes
@@ -91,7 +91,7 @@ namespace OAKForUnity
             // Check if was possible to init device with pipeline. Base class handles replay data if possible.
             if (!deviceRunning)
                 Debug.LogError(
-                    "Was not possible to initialize UB Test. Check you have available devices on OAK For Unity -> Device Manager and check you setup correct deviceId if you setup one.");
+                    "Was not possible to initialize UB Hand Tracking. Check you have available devices on OAK For Unity -> Device Manager and check you setup correct deviceId if you setup one.");
 
             return deviceRunning;
         }
@@ -104,7 +104,7 @@ namespace OAKForUnity
             {
                 if (useUnityBridge)
                 {
-                    ubTestResults = tcpClientBehaviour.GetResults(out colorTexture);
+                    ubHandTrackingResults = tcpClientBehaviour.GetResults(out colorTexture);
                 }
                 /*else
                 {
@@ -118,7 +118,7 @@ namespace OAKForUnity
             // if replay read results from file
             else
             {
-                ubTestResults = device.results;
+                ubHandTrackingResults = device.results;
             }
         }
         
@@ -143,10 +143,10 @@ namespace OAKForUnity
                 }
             }
 
-            if (string.IsNullOrEmpty(ubTestResults)) return;
+            if (string.IsNullOrEmpty(ubHandTrackingResults)) return;
 
             // EXAMPLE HOW TO PARSE INFO
-            var json = JSON.Parse(ubTestResults);
+            var json = JSON.Parse(ubHandTrackingResults);
             var arr1 = json["res2"]["arr1"];
 
             if (countData == -1)

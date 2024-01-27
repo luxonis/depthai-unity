@@ -118,11 +118,11 @@ while True:
     if len(hands)==1:
         names = ['hand_0','res2']
         objects = [hands[0],test_object]
-        configs = [['pd_score','pd_box','rotation','lm_score','landmarks','handedness','label'],['result','arr1']]  # List of fields to serialize for each object
+        configs = [['pd_score','pd_box','rotation','lm_score','landmarks','handedness','label','world_landmarks','gesture'],['result','arr1']]  # List of fields to serialize for each object
     elif len(hands)==2:
         names = ['hand_0','hand_1','res2']
         objects = [hands[0],hands[1],test_object]
-        configs = [['pd_score','pd_box','rotation','lm_score','landmarks','handedness','label'],['pd_score','pd_box','rotation','lm_score','landmarks','handedness','label'],['result','arr1']]  # List of fields to serialize for each object
+        configs = [['pd_score','pd_box','rotation','lm_score','landmarks','handedness','label','world_landmarks','gesture'],['pd_score','pd_box','rotation','lm_score','landmarks','handedness','label','world_landmarks','gesture'],['result','arr1']]  # List of fields to serialize for each object
     else:
         names = ['res2']
         objects = [test_object]
