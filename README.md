@@ -65,6 +65,8 @@ Easy installation from the GitHub repository with Unity project example, and com
 
 - [Contributions](#contributions-and-acknowledgments)
 
+- [Community projects](#community-projects)
+
 - [License](#license)
 
 # Get started
@@ -279,6 +281,13 @@ Open scene called `Test` and hit play. You should see oak color camera preview a
 **Important: start server first before starting client**
 
 **Important: remember OAK devices can only run one pipeline at time, so it's not possible to run C++ examples if python server app is running at same time, so remember stop server app, in case you want to run other apps**
+
+## Hand Tracking - depthai_hand_tracker by geaxgx
+
+start server:
+``python .\depthai_hand_tracking_unity_bridge.py --use_world_landmarks --gesture`` 
+
+unity client scene: HandTracking.unity under folder `Example Scenes/UnityBridge`
 
 # What's new
 

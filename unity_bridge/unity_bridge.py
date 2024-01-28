@@ -3,6 +3,7 @@ import json
 import cv2
 import _thread as thread
 import time
+import numpy as np
 
 class UnityBridge:
     def __init__(self, address):
@@ -50,8 +51,16 @@ class UnityBridge:
         serialized_data = {}#{key: [] for key in key_names}
 
         for obj, config, key_name in zip(objects, configs, key_names):
-            serialized_obj = {field: getattr(obj, field) for field in config if hasattr(obj, field)}
-            serialized_data[key_name] = serialized_obj #.append(serialized_obj)
+            serialized_obj = {}
+            for field in config:
+                if hasattr(obj, field):
+                    value = getattr(obj, field)
+                    # Check if the value is a numpy.ndarray and convert it to a list
+                    if isinstance(value, np.ndarray):
+                        value = value.tolist()
+                    # Add other type checks and conversions as necessary
+                    serialized_obj[field] = value
+            serialized_data[key_name] = serialized_obj
 
         return serialized_data
 
