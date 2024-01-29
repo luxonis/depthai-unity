@@ -90,7 +90,8 @@ namespace OAKForUnity
         // When new scene is loaded remove loader when device is running
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            StartCoroutine(WaitForDeviceRunning());
+            if (scene.name == "HandTracking") HideLoader(); 
+            else StartCoroutine(WaitForDeviceRunning());
         }
         
         // UI helpers. FadeOutText and ScrollUp menu

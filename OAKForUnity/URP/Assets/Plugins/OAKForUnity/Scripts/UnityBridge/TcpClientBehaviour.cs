@@ -182,6 +182,19 @@ public class TcpClientBehaviour : MonoBehaviour
         texture = _texture;
         return _json;
     }
+
+    public void CloseUB()
+    {
+        // Close the client
+        if (client != null)
+        {
+            client.Close();
+        }
+        if (clientThread != null && clientThread.IsAlive)
+        {
+            clientThread.Abort();
+        }
+    }
     
     void OnDestroy()
     {

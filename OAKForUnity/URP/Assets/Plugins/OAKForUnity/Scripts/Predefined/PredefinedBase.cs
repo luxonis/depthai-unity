@@ -305,6 +305,11 @@ namespace OAKForUnity
          */
         public void FinishDevice()
         {
+            if (useUnityBridge)
+            {
+                tcpClientBehaviour.CloseUB();
+            }
+            
             if (processMode == ProcessMode.UnityThread)
             {
                 if (deviceRunning)

@@ -235,7 +235,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 34947478}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a016fde1fd88a8a44ae168901b7e2002, type: 3}
+  m_Script: {fileID: 11500000, guid: ed0be9d2f69379f4c82613063a9a80b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pipeline: {fileID: 1366592993}
@@ -809,18 +809,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1366592991}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a7d4d0408c71ee479ffece855736a3e, type: 3}
+  m_Script: {fileID: 11500000, guid: 12a75ecfd3229de4da04da7b3573c3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   processMode: 0
   deviceRunning: 0
+  useUnityBridge: 0
+  tcpClientBehaviour: {fileID: 0}
   cameraFPS: 30
   rgbResolution: 0
   monoResolution: 0
   medianFilter: 0
   useIMU: 0
   retrieveSystemInformation: 0
-  drawBestFaceInPreview: 1
+  drawBestFaceInPreview: 0
   drawAllFacesInPreview: 0
   faceScoreThreshold: 0.5
   colorTexture: {fileID: 0}
