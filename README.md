@@ -56,8 +56,11 @@ Easy installation from the GitHub repository with Unity project example, and com
 - [Examples](#examples)
 
 - [Build C++ library](#build-c-library)
+  - [How to integrate your own pipelines](#how-to-integrate-your-own-pipelines)
 
 - [Unity bridge - python](#unity-bridge-python)
+
+- [What's new](#whats-new)
 
 - [Known issues](#known-issues)
 
@@ -65,13 +68,13 @@ Easy installation from the GitHub repository with Unity project example, and com
 
 - [Contributions](#contributions-and-acknowledgments)
 
-- [Community projects](#community-projects)
-
 - [License](#license)
 
 # Get started
 
-This repository contains Unity project with examples, inside the folder `OAKForUnity`
+This repository contains Unity project with examples, inside the folder `OAKForUnity/URP`
+
+Notice that plugin core is non-dependent of render pipeline, but some examples like point cloud VFX requires Visual Effect Graph.
 
 Easy way to start is explore the examples inside this project. Just need Unity and OAK device.
 
@@ -128,7 +131,7 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 Steps:
 
-- Open Unity project under folder `OAKForUnity`
+- Open Unity project under folder `OAKForUnity/URP`
 - Click on menu option "OAK For Unity" -> "Example scenes"
 - Hit play
 
@@ -136,7 +139,7 @@ Steps:
 
 # Examples
 
-Unity project `OAKForUnity` includes following examples. Each example has its own unity scene and C# script showing how to use the results from the pipeline and has its own C++ pipeline.
+Unity project `OAKForUnity/URP` includes following examples. Each example has its own unity scene and C# script showing how to use the results from the pipeline and has its own C++ pipeline.
 
 Unity scenes could be found under folder `Plugins/OAKForUnity/Example scenes/`
 
@@ -167,25 +170,44 @@ Head pose estimation
 
 ## Unity Bridge
 
-### Color camera preview (Unity Bridge)
+### Color camera preview
+Color camera preview using depthai-python example.
 
 ### Hand Traking (Blaze hands through Unity Bridge)
 Hand tracking using excellent python [repo](https://github.com/geaxgx/depthai_hand_tracker) from geaxgx 
+
+Requirements to run this example:
+```shell
+git clone https://github.com/luxonis/depthai-unity.git
+git submodule update --init --recursive
+cd unity_bridge 
+python -m pip install -r requirements.txt 
+python .\depthai_hand_tracking_unity_bridge.py --use_world_landmarks --gesture
+```
+
+Using right hand gesture "FIST" + hand rotation controls scene sun rotation.
 
 <p align="center">
   <img src="docs/img/handtrack_lowres.gif" width="100%" />
   <br>
 
+For more information take a look at [Unity Bridge](#unity-bridge-python)
 # Build C++ library
 
 ## How it works
 Unity standard plugin mechanism (usual in other platforms) is based on dynamic library interface between C# and C++ (depthai-core library) in this case.
 
-We provide some prebuild libraries with the unity project, but also full source code under `src/` folder to build yourself.
+We provide some prebuild libraries with the unity project, but also full source code could be found under `src/` folder to build library your own.
 
 ## How to integrate your own pipelines
 
 In case you want to extend the unity project or your own project with your own pipelines, you need to develop C++ depthai pipeline, C# interface and compile dynamic library.
+
+Under folder `src` you could find the C++ pipelines implementation for plugin examples, that could be good starting point to develop your own pipeline.
+
+Before C++ implementation, there is option to develop in python and use [unity bridge](#unity-bridge-python) to experiment inside unity.
+
+To build the plugin library follow steps below:
 
 ### Windows 10/11
 ```shell
@@ -221,15 +243,15 @@ We provide a small framework, taking care of unity life-cycle, so it's easy to e
 
 ## How to integrate on your own unity project
 
-Unity project includes main menu to navigate throught the examples. In case you want to integrate the core of the plugin with your own project, it's easy to export the main framework as .unitypackage.
+Unity project includes main menu to navigate throught the examples. In case you want to integrate the core of the plugin with your own project, it's easy to export the core framework as .unitypackage.
 
 We're currently working to provide the plugin through Scopely and Unity AssetStore so would be much easier to add the plugin to your project.
 
 # Unity Bridge (python)
 
-Since we released the initial version of the plugin, we got many feedback about the pain points to develop with it. One main recurrent feedback is the need to develop the pipeline in C++ making slow the developing cycle. We know also because custom projects with customers (our own dogfood).
+Since we released the initial version of the plugin, we got many feedback about the pain points to develop and extend the plugin. One main recurrent feedback is the need to develop the pipeline in C++ making slow the developing cycle. We know by self-experience.
 
-DepthAI library comes also in Python flavour, so many community projects are available only on Python. Also developing with python is much more convenient, even only as prototype, as you don't need to compile and reload dynamic libraries.
+DepthAI library comes also in Python flavour, so many community projects are available only on Python. Also developing with python is much more convenient, even to develop only a prototype, as there is no need to compile and reload dynamic libraries.
 
 In the future we want to explore also the creation of C# wrapper around depthai-core C++ library.
 
@@ -263,11 +285,12 @@ Requirements are very similar to run any depthai python application.
 
 For python we recommend to use conda environment:
 
-`` conda create -n depthai-unity-env python==3.10 -y ``
-
-`` cd unity_bridge ``
-
-`` python -m pip install -r requirements.txt ``
+```shell
+conda create -n depthai-unity-env python==3.10 -y
+conda activate depthai-unity-env
+cd unity_bridge 
+python -m pip install -r requirements.txt 
+```
 
 ## How to integrate external projects
 
@@ -285,7 +308,7 @@ We prepared dynamic serialization to make more easy send data back to unity from
 
 ``python test_unity_bridge.py``
 
-Starts python server with OAK color camera preview, waiting for client to connect.
+Start python server with OAK color camera preview, waiting for client to connect.
 
 ### unity client app
 
@@ -305,6 +328,8 @@ start server:
 unity client scene: HandTracking.unity under folder `Example Scenes/UnityBridge`
 
 # What's new
+
+- 2024/1/30: Complete examples with python unity bridge and hand tracking example
 
 # Known issues
 - If you're using OAK-1 (don't have stereo depth support) you need to disable depth on the examples, to prevent crash. UseDepth = false; config.confidenceThreshold = 0;
@@ -328,9 +353,9 @@ Are you building spatial app using OAK For Unity? Please DM and will be a pleasu
 
 - Point cloud VFX examples are based on great work by [Keijiro Takahashi](https://github.com/keijiro/)
 
-- Unity bridge uses [Netly]() for TCP socket communication.
+- Unity bridge uses [Netly](https://assetstore.unity.com/packages/tools/network/netly-tcp-udp-ssl-tls-225473) for TCP socket communication.
 
-- Depthai hand tracking python project by [Geaxgx](https://github.com/geaxgx))
+- Depthai hand tracking python project by [Geaxgx](https://github.com/geaxgx)
 
 ## How to contribute in this repository
 
