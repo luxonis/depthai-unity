@@ -822,7 +822,7 @@ MonoBehaviour:
   medianFilter: 0
   useIMU: 0
   retrieveSystemInformation: 0
-  drawBestFaceInPreview: 0
+  drawBestFaceInPreview: 1
   drawAllFacesInPreview: 0
   faceScoreThreshold: 0.5
   colorTexture: {fileID: 0}
