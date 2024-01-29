@@ -165,8 +165,16 @@ Object detection using tiny yolo model
 ## Head Pose
 Head pose estimation
 
-## Hand Traking (Blaze hands through Unity Bridge)
-Hand tracking using excellent python repo from geaxgx
+## Unity Bridge
+
+### Color camera preview (Unity Bridge)
+
+### Hand Traking (Blaze hands through Unity Bridge)
+Hand tracking using excellent python [repo](https://github.com/geaxgx/depthai_hand_tracker) from geaxgx 
+
+<p align="center">
+  <img src="docs/img/handtrack_lowres.gif" width="100%" />
+  <br>
 
 # Build C++ library
 
@@ -321,6 +329,8 @@ Are you building spatial app using OAK For Unity? Please DM and will be a pleasu
 - Point cloud VFX examples are based on great work by [Keijiro Takahashi](https://github.com/keijiro/)
 
 - Unity bridge uses [Netly]() for TCP socket communication.
+
+- Depthai hand tracking python project by [Geaxgx](https://github.com/geaxgx))
 
 ## How to contribute in this repository
 
