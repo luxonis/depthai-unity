@@ -66,9 +66,11 @@ public class TcpClientBehaviour : MonoBehaviour
         {
             // Handle incoming data
             // Remember to marshal this call back to the main thread if you're updating Unity objects
+            //Debug.Log("GET JSON: "+_getJson);
             //Debug.Log("DATA: "+data.Length+" 0:"+data[0]);
             
             byte[] delimiterBytes = Encoding.ASCII.GetBytes(DELIMITER); 
+            byte[] delimiterEndBytes = Encoding.ASCII.GetBytes(DELIMITER_END);
             
             if (data == delimiterBytes) 
             {
@@ -90,7 +92,6 @@ public class TcpClientBehaviour : MonoBehaviour
 					// Extract JSON data
 					_pendingJsonData = new byte[jsonPartLength];
 					Array.Copy(jsonMemoryStream.ToArray(), 0, _pendingJsonData, 0, jsonPartLength);
-
 					// Prepare for image data reception
 					jsonMemoryStream.SetLength(0); // Reset the JSON memory stream
 					jsonMemoryStream.Position = 0;
@@ -103,27 +104,18 @@ public class TcpClientBehaviour : MonoBehaviour
 
 					_getJson = 2; // Move to image parsing state
 			    }
-			    else if (data.Length < 32768) // No delimiter found and data length less than 32768 indicates end of JSON part
-			    {
-					byte[] totalData = jsonMemoryStream.ToArray();
-					_pendingJsonData = new byte[totalData.Length];
-					Array.Copy(totalData, 0, _pendingJsonData, 0, _pendingJsonData.Length);
-
-					jsonMemoryStream.SetLength(0);
-					jsonMemoryStream.Position = 0;
-					_getJson = 2; // Move to image parsing state
-			    }
 			}
 			else if (_getJson == 2)
 			{
 			    // Parse image
 			    memoryStream.Write(data, 0, data.Length);
-
-			    if (data.Length < 32768) // Indicates the end of the image data
+                
+                int delimiterEndIndex = FindDelimiterIndex(memoryStream.ToArray(), delimiterEndBytes);
+                if (delimiterEndIndex >= 0) // Delimiter found
 			    {
-					byte[] totalData = memoryStream.ToArray();
+                    byte[] totalData = memoryStream.ToArray();
 					_pendingImageData = new byte[totalData.Length];
-					Array.Copy(totalData, 0, _pendingImageData, 0, _pendingImageData.Length);
+					Array.Copy(totalData, 0, _pendingImageData, 0, _pendingImageData.Length-delimiterEndBytes.Length);
 
 					memoryStream.SetLength(0);
 					memoryStream.Position = 0;
@@ -147,7 +139,7 @@ public class TcpClientBehaviour : MonoBehaviour
     // Helper method to find the delimiter in the data
     int FindDelimiterIndex(byte[] data, byte[] delimiter)
     {
-        for (int i = 0; i < data.Length - delimiter.Length; i++)
+        for (int i = 0; i < data.Length - delimiter.Length+1; i++)
         {
             bool match = true;
             for (int j = 0; j < delimiter.Length; j++)
@@ -171,16 +163,13 @@ public class TcpClientBehaviour : MonoBehaviour
     }
     private void Update()
     {
-        if (_pendingImageData != null)
+        if (_pendingImageData != null && _getJson == 0)
         {
-            if (_texture.LoadImage(_pendingImageData))
-            {
-                _json = System.Text.Encoding.UTF8.GetString(_pendingJsonData);
-            }
-            else
+            if (!_texture.LoadImage(_pendingImageData))
             {
                 Debug.LogError("Failed to create texture from received image data");
             }
+            _json = System.Text.Encoding.UTF8.GetString(_pendingJsonData);
             _pendingImageData = null; // Clear the data after processing
             _pendingJsonData = null;
             _getJson = 1;
