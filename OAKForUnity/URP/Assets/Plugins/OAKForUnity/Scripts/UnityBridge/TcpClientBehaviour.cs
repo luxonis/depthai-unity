@@ -11,7 +11,7 @@ using System.Net.Sockets;
 using System.Threading;
 using Netly.Core;
 using TcpClient = Netly.TcpClient;
-
+using System.Text;
 // Based on TCP Client example provided by Netly
 
 public class TcpClientBehaviour : MonoBehaviour
@@ -34,6 +34,8 @@ public class TcpClientBehaviour : MonoBehaviour
     MemoryStream memoryStream = new MemoryStream();
 
     private int _getJson = 1;
+    private const string DELIMITER = "<<END_OF_JSON>>";
+    private const string DELIMITER_END = "<<END>>";
     void Start()
     {
         _connected = false;
@@ -66,48 +68,68 @@ public class TcpClientBehaviour : MonoBehaviour
             // Remember to marshal this call back to the main thread if you're updating Unity objects
             //Debug.Log("DATA: "+data.Length+" 0:"+data[0]);
             
-            // parse json results
+            byte[] delimiterBytes = Encoding.ASCII.GetBytes(DELIMITER); 
+            
+            if (data == delimiterBytes) 
+            {
+            	_getJson=2;
+            }
+            
             if (_getJson == 1)
-            {
-                if (data.Length == 32768)
-                {
-                    jsonMemoryStream.Write(data, 0, data.Length);
-                }
-                else
-                {
-                    jsonMemoryStream.Write(data, 0, data.Length);
-                    byte[] totalData = jsonMemoryStream.ToArray();
-                    _pendingJsonData = new byte[totalData.Length];
-                    Array.Copy(totalData, 0, _pendingJsonData, 0, _pendingJsonData.Length);
-                    
-                    jsonMemoryStream.SetLength(0);
-                    jsonMemoryStream.Position = 0;
-                    _getJson = 2;
+			{
+			    jsonMemoryStream.Write(data, 0, data.Length);
 
-                }
-            }
-            else if (_getJson == 2)
-            {
-                // parse image
-                if (data.Length == 32768)
-                {
-                    memoryStream.Write(data, 0, data.Length);
-                }
-                else
-                {
-                    memoryStream.Write(data, 0, data.Length);
+			    // Check if the delimiter is in the received data
+			    int delimiterIndex = FindDelimiterIndex(jsonMemoryStream.ToArray(), delimiterBytes);
+			    if (delimiterIndex >= 0) // Delimiter found
+			    {
+					// Split the data at the delimiter
+					int jsonPartLength = delimiterIndex;
+					int imagePartStartIndex = delimiterIndex + delimiterBytes.Length;
 
-                    byte[] totalData = memoryStream.ToArray();
+					// Extract JSON data
+					_pendingJsonData = new byte[jsonPartLength];
+					Array.Copy(jsonMemoryStream.ToArray(), 0, _pendingJsonData, 0, jsonPartLength);
 
-                    _pendingImageData = new byte[totalData.Length];
-                    Array.Copy(totalData, 0, _pendingImageData, 0, _pendingImageData.Length);
+					// Prepare for image data reception
+					jsonMemoryStream.SetLength(0); // Reset the JSON memory stream
+					jsonMemoryStream.Position = 0;
 
-                    memoryStream.SetLength(0);
-                    memoryStream.Position = 0;
-                    client.ToData("DATA");
-                    _getJson = 0;
-                }
-            }
+					if (data.Length > imagePartStartIndex) // If there's image data following the delimiter
+					{
+					    // Write the initial part of the image data to the memoryStream
+					    memoryStream.Write(data, imagePartStartIndex, data.Length - imagePartStartIndex);
+					}
+
+					_getJson = 2; // Move to image parsing state
+			    }
+			    else if (data.Length < 32768) // No delimiter found and data length less than 32768 indicates end of JSON part
+			    {
+					byte[] totalData = jsonMemoryStream.ToArray();
+					_pendingJsonData = new byte[totalData.Length];
+					Array.Copy(totalData, 0, _pendingJsonData, 0, _pendingJsonData.Length);
+
+					jsonMemoryStream.SetLength(0);
+					jsonMemoryStream.Position = 0;
+					_getJson = 2; // Move to image parsing state
+			    }
+			}
+			else if (_getJson == 2)
+			{
+			    // Parse image
+			    memoryStream.Write(data, 0, data.Length);
+
+			    if (data.Length < 32768) // Indicates the end of the image data
+			    {
+					byte[] totalData = memoryStream.ToArray();
+					_pendingImageData = new byte[totalData.Length];
+					Array.Copy(totalData, 0, _pendingImageData, 0, _pendingImageData.Length);
+
+					memoryStream.SetLength(0);
+					memoryStream.Position = 0;
+					_getJson = 0; // Reset or move to the next state as needed
+			    }
+			}        
         });
 
         client.OnEvent((string name, byte[] data) =>
@@ -122,6 +144,25 @@ public class TcpClientBehaviour : MonoBehaviour
 
     }
 
+    // Helper method to find the delimiter in the data
+    int FindDelimiterIndex(byte[] data, byte[] delimiter)
+    {
+        for (int i = 0; i < data.Length - delimiter.Length; i++)
+        {
+            bool match = true;
+            for (int j = 0; j < delimiter.Length; j++)
+            {
+                if (data[i + j] != delimiter[j])
+                {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) return i;
+        }
+        return -1; // Delimiter not found
+    }
+    
     public bool InitUB()
     {
         clientThread = new Thread(() => client.Open(new Host(host, port)));
@@ -143,6 +184,7 @@ public class TcpClientBehaviour : MonoBehaviour
             _pendingImageData = null; // Clear the data after processing
             _pendingJsonData = null;
             _getJson = 1;
+            client.ToData("DATA");
         }
     }
 

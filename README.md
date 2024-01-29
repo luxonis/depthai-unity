@@ -117,6 +117,13 @@ Easy way to start is explore the examples inside this project. Just need Unity a
   sudo dnf install libusb1-devel opencv-devel cmake gcc gcc-c++ git
   ```
 
+if you get any message related to udev rules try:
+
+```shell
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' | sudo tee /etc/udev/rules.d/80-movidius.rules
+sudo udevadm control --reload-rules && sudo udevadm trigger
+``````
+
 ---
 
 Steps:

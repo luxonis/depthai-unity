@@ -127,7 +127,7 @@ class UnityBridge:
         json_data = json.dumps(data).encode('utf-8')
 
         try:
-            conn.sendall(json_data)
+            conn.sendall(json_data+b'<<END_OF_JSON>>')
             conn.sendall(image_data)
             self.count = self.count + 1
         except socket.error as e:
