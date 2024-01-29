@@ -128,7 +128,7 @@ class UnityBridge:
 
         try:
             conn.sendall(json_data+b'<<END_OF_JSON>>')
-            conn.sendall(image_data)
+            conn.sendall(image_data+b'<<END>>')
             self.count = self.count + 1
         except socket.error as e:
             print(f"Error sending data: {e}")
