@@ -58,6 +58,7 @@ namespace OAKForUnity
 
         [Header("Object Detector Results")] 
         public Texture2D colorTexture;
+        public Texture2D fullResTexture;
         public string objectDetectorResults;
         public string systemInfo;
 
@@ -69,6 +70,11 @@ namespace OAKForUnity
         private GCHandle _colorPixelHandle;
         private IntPtr _colorPixelPtr;
 
+        // private attributes
+        private Color32[] _fullResColorPixel32;
+        private GCHandle _fullResColorPixelHandle;
+        private IntPtr _fullResColorPixelPtr;
+
         // Init textures. Each PredefinedBase implementation handles textures. Decoupled from external viz (Canvas, VFX, ...)
         void InitTexture()
         {
@@ -78,6 +84,15 @@ namespace OAKForUnity
             _colorPixelHandle = GCHandle.Alloc(_colorPixel32, GCHandleType.Pinned);
             //Get the pinned address
             _colorPixelPtr = _colorPixelHandle.AddrOfPinnedObject();
+            
+            
+            fullResTexture = new Texture2D(4056, 3040, TextureFormat.ARGB32, false);
+            _fullResColorPixel32 = fullResTexture.GetPixels32();
+            //Pin pixel32 array
+            _fullResColorPixelHandle = GCHandle.Alloc(_fullResColorPixel32, GCHandleType.Pinned);
+            //Get the pinned address
+            _fullResColorPixelPtr = _fullResColorPixelHandle.AddrOfPinnedObject();
+
         }
 
         // Start. Init textures and frameInfo
@@ -90,6 +105,7 @@ namespace OAKForUnity
 
             // Init FrameInfo. Only need it in case memcpy data ptr on plugin lib.
             frameInfo.colorPreviewData = _colorPixelPtr;
+            frameInfo.colorData = _fullResColorPixelPtr;
         }
 
         // Prepare Pipeline Configuration and call pipeline init implementation
@@ -163,6 +179,10 @@ namespace OAKForUnity
                 // Apply textures
                 colorTexture.SetPixels32(_colorPixel32);
                 colorTexture.Apply();
+
+                // Apply textures
+                fullResTexture.SetPixels32(_fullResColorPixel32);
+                fullResTexture.Apply();
             }
             // if replaying data
             else

@@ -18,6 +18,7 @@ namespace OAKForUnity
         
         [Header("UI Binding")] 
         public Image colorCameraImage;
+        public Image fullResCameraImage;
         public TMPro.TextMeshProUGUI objectResults;
         
         private bool _init = false;
@@ -32,6 +33,7 @@ namespace OAKForUnity
         {
             // Texture2D binding
             colorCameraImage.material.mainTexture = pipeline.colorTexture;
+            fullResCameraImage.material.mainTexture = pipeline.fullResTexture;
             _init = true;
         }
 

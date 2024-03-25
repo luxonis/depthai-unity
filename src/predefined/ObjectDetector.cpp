@@ -67,6 +67,7 @@ dai::Pipeline createObjectDetectorPipeline(PipelineConfig *config)
         colorCam->setPreviewSize(config->previewSizeWidth, config->previewSizeHeight);
     }
 
+    printf("cam res: %d",config->colorCameraResolution);
     // Color camera properties            
     colorCam->setResolution(dai::ColorCameraProperties::SensorResolution::THE_1080_P);
     if (config->colorCameraResolution == 1) colorCam->setResolution(dai::ColorCameraProperties::SensorResolution::THE_4_K);
@@ -94,6 +95,10 @@ dai::Pipeline createObjectDetectorPipeline(PipelineConfig *config)
 
     colorCam->preview.link(spatialDetectionNetwork->input);
     spatialDetectionNetwork->passthrough.link(xlinkOut->input);
+
+    auto fullResOut = pipeline.create<dai::node::XLinkOut>();
+    fullResOut->setStreamName("fullres");    
+    colorCam->isp.link(fullResOut->input);
 
     // output of neural network
     auto nnOut = pipeline.create<dai::node::XLinkOut>();
@@ -255,12 +260,15 @@ extern "C"
 
             std::shared_ptr<dai::DataOutputQueue> preview;
             std::shared_ptr<dai::DataOutputQueue> depthQueue;
+            std::shared_ptr<dai::DataOutputQueue> fullRes;
             
             // object detector results
             auto detectionNNQueue = device->getOutputQueue("detections",4,false);
             
             // if preview image is requested. True in this case.
             if (getPreview) preview = device->getOutputQueue("preview",4,false);
+            
+            fullRes = device->getOutputQueue("fullres",4,false);
             
             // if depth images are requested. All images.
             if (useDepth) depthQueue = device->getOutputQueue("depth", 4, false);
@@ -273,9 +281,13 @@ extern "C"
             auto imgFrame = preview->get<dai::ImgFrame>();
             auto inDet = detectionNNQueue->get<dai::SpatialImgDetections>();
             auto depth = depthQueue->get<dai::ImgFrame>();
-
+            auto fullResF = fullRes->get<dai::ImgFrame>();
+            
             cv::Mat frame = imgFrame->getCvFrame();
             cv::Mat depthFrame = depth->getFrame();
+            cv::Mat fullResFrame = fullResF->getCvFrame();
+
+            printf("%d %d\n",fullResFrame.rows,fullResFrame.cols);
 
             int count;
             // In this case we allocate before Texture2D (ARGB32) and memcpy pointer data 
@@ -335,6 +347,7 @@ extern "C"
             }
 
             toARGB(frame,frameInfo->colorPreviewData);
+            toARGB(fullResFrame,frameInfo->colorData);
 
             objectDetectorJson["objects"] = objectsArr;
 

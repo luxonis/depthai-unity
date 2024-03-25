@@ -158,6 +158,7 @@ RectTransform:
   - {fileID: 495089145}
   - {fileID: 708499471}
   - {fileID: 73158269}
+  - {fileID: 1427675250}
   m_Father: {fileID: 729677747}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -241,6 +242,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pipeline: {fileID: 2947686792172437557}
   colorCameraImage: {fileID: 495089146}
+  fullResCameraImage: {fileID: 1427675251}
   objectResults: {fileID: 708499472}
 --- !u!1 &73158268
 GameObject:
@@ -946,6 +948,82 @@ Transform:
   m_Father: {fileID: 729677747}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1427675249
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1427675250}
+  - component: {fileID: 1427675252}
+  - component: {fileID: 1427675251}
+  m_Layer: 5
+  m_Name: Full Res Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1427675250
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427675249}
+  m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 34947479}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -1316, y: -298}
+  m_SizeDelta: {x: 800, y: 600}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1427675251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427675249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: e9ee8495dc1f9a04aa2f7035ad8ce839, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1427675252
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427675249}
+  m_CullTransparentMesh: 1
 --- !u!1 &1687573504
 GameObject:
   m_ObjectHideFlags: 0
@@ -995,6 +1073,8 @@ MonoBehaviour:
   startPipelineWhenPlay: 1
   pipelines:
   - {fileID: 2947686792172437557}
+  laserDotProjectorBrightness: 0
+  irFloodLightBrightness: 0
   recordResults: 0
   pathToRecord: 
   replayResults: 0
@@ -6835,14 +6915,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   processMode: 0
   deviceRunning: 0
+  useUnityBridge: 0
+  tcpClientBehaviour: {fileID: 0}
   cameraFPS: 30
-  rgbResolution: 0
+  rgbResolution: 2
   monoResolution: 0
   medianFilter: 3
   useIMU: 0
   retrieveSystemInformation: 0
   detectionScoreThreshold: 0
   colorTexture: {fileID: 0}
+  fullResTexture: {fileID: 0}
   objectDetectorResults: 
   systemInfo: 
   apple: {fileID: 1332349097}
