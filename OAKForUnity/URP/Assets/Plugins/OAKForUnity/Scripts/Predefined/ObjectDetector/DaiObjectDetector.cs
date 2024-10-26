@@ -18,8 +18,8 @@ namespace OAKForUnity
         /*
         * Pipeline creation based on streams template
         *
-        * @param config pipeline configuration 
-        * @returns pipeline 
+        * @param config pipeline configuration
+        * @returns pipeline
         */
         private static extern bool InitObjectDetector(in PipelineConfig config);
 
@@ -33,37 +33,37 @@ namespace OAKForUnity
         * @param retrieveInformation True if system information is requested, False otherwise. Requires rate in pipeline creation.
         * @param useIMU True if IMU information is requested, False otherwise. Requires freq in pipeline creation.
         * @param deviceNum Device selection on unity dropdown
-        * @returns Json with results or information about device availability. 
-        */    
+        * @returns Json with results or information about device availability.
+        */
         private static extern IntPtr ObjectDetectorResults(out FrameInfo frameInfo, bool getPreview,float objectScoreThreshold, bool useDepth, bool retrieveInformation, bool useIMU, int deviceNum);
 
-        
+
         // Editor attributes
-        [Header("RGB Camera")] 
+        [Header("RGB Camera")]
         public float cameraFPS = 30;
         public RGBResolution rgbResolution;
         private const bool Interleaved = false;
         private const ColorOrder ColorOrderV = ColorOrder.BGR;
 
-        [Header("Mono Cameras")] 
+        [Header("Mono Cameras")]
         public MonoResolution monoResolution;
 
-        [Header("Object Detector Configuration")] 
+        [Header("Object Detector Configuration")]
         public MedianFilter medianFilter;
         public bool useIMU = false;
         public bool retrieveSystemInformation = false;
-        public float detectionScoreThreshold; 
+        public float detectionScoreThreshold;
         private const bool GETPreview = true;
         private const bool UseDepth = true;
 
-        [Header("Object Detector Results")] 
+        [Header("Object Detector Results")]
         public Texture2D colorTexture;
         public string objectDetectorResults;
         public string systemInfo;
 
-        [Header("Objects")] 
+        [Header("Objects")]
         public GameObject apple;
-        
+
         // private attributes
         private Color32[] _colorPixel32;
         private GCHandle _colorPixelHandle;
@@ -72,7 +72,7 @@ namespace OAKForUnity
         // Init textures. Each PredefinedBase implementation handles textures. Decoupled from external viz (Canvas, VFX, ...)
         void InitTexture()
         {
-            colorTexture = new Texture2D(416, 416, TextureFormat.ARGB32, false);
+            colorTexture = new Texture2D(640,352, TextureFormat.ARGB32, false);
             _colorPixel32 = colorTexture.GetPixels32();
             //Pin pixel32 array
             _colorPixelHandle = GCHandle.Alloc(_colorPixel32, GCHandleType.Pinned);
@@ -85,7 +85,7 @@ namespace OAKForUnity
         {
             // Init dataPath to load object detector NN model
             _dataPath = Application.dataPath;
-            
+
             InitTexture();
 
             // Init FrameInfo. Only need it in case memcpy data ptr on plugin lib.
@@ -101,9 +101,9 @@ namespace OAKForUnity
             config.colorCameraInterleaved = Interleaved;
             config.colorCameraColorOrder = (int) ColorOrderV;
             // Need it for color camera preview
-            config.previewSizeHeight = 416;
-            config.previewSizeWidth = 416;
-            
+            config.previewSizeHeight = 352;
+            config.previewSizeWidth = 640;
+
             // Mono camera
             config.monoLCameraResolution = (int) monoResolution;
             config.monoRCameraResolution = (int) monoResolution;
@@ -122,11 +122,11 @@ namespace OAKForUnity
             if (useIMU) config.freq = 400;
             if (retrieveSystemInformation) config.rate = 30.0f;
             config.medianFilter = (int) medianFilter;
-            
+
             // Object NN model
             config.nnPath1 = _dataPath +
-                             "/Plugins/OAKForUnity/Models/yolo-v4-tiny-tf_openvino_2021.4_6shave.blob";
-            
+                             "/Plugins/OAKForUnity/Models/yolov8n_coco_640x352.blob";
+
             // Plugin lib init pipeline implementation
             deviceRunning = InitObjectDetector(config);
 
@@ -179,11 +179,11 @@ namespace OAKForUnity
             }
 
             if (string.IsNullOrEmpty(objectDetectorResults)) return;
-            
+
             var obj = JSON.Parse(objectDetectorResults);
             int centerx = 0;
             int centery = 0;
-            
+
             if (obj != null)
             {
                 // record results
@@ -206,7 +206,7 @@ namespace OAKForUnity
                     // look for person and apple
                     if (detection["label"] != "apple") continue;
                     if (!(detection["score"] < bestAppleScore)) continue;
-                    
+
                     bestAppleScore = detection["score"];
                     bestAppleDepthx = detection["X"];
                     bestAppleDepthy = detection["Y"];
@@ -220,11 +220,11 @@ namespace OAKForUnity
                     // Normalize 3D position of object regarding the camera to the Unity scene depending your use case / design / needs
                     apple.transform.localPosition = new Vector3((float)bestAppleDepthx/100.0f,(float)bestAppleDepthy/100.0f,(float)bestAppleDepthz/100.0f);
                 }
-                
+
             }
-            
+
             if (!retrieveSystemInformation || obj == null) return;
-            
+
             float ddrUsed = obj["sysinfo"]["ddr_used"];
             float ddrTotal = obj["sysinfo"]["ddr_total"];
             float cmxUsed = obj["sysinfo"]["cmx_used"];
