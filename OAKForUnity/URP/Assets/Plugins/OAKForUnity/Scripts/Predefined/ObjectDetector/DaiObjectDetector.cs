@@ -111,11 +111,11 @@ namespace OAKForUnity
             // Depth
             // Need it for depth
             config.confidenceThreshold = 255;
-            config.leftRightCheck = false;
+            config.leftRightCheck = true;
             config.ispScaleF1 = 0;
             config.ispScaleF2 = 0;
             config.manualFocus = 130;
-            config.depthAlign = 0; // RGB align
+            config.depthAlign = 1; // RGB align
             config.subpixel = false;
             config.deviceId = device.deviceId;
             config.deviceNum = (int) device.deviceNum;

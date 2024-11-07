@@ -263,7 +263,7 @@ extern "C"
             if (getPreview) preview = device->getOutputQueue("preview",4,false);
             
             // if depth images are requested. All images.
-            if (useDepth) depthQueue = device->getOutputQueue("depth", 4, false);
+            depthQueue = device->getOutputQueue("depth", 4, false);
             
             auto xoutBoundingBoxDepthMappingQueue = device->getOutputQueue("boundingBoxDepthMapping", 4, false);
 
