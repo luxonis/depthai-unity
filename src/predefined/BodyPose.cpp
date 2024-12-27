@@ -65,6 +65,11 @@ void SetCameraPreviewSize(std::shared_ptr<dai::node::ColorCamera> colorCam, Pipe
         resx = 4208;
         resy = 3120;
     }
+    if (config->colorCameraResolution == 4) 
+    {
+        resx = 1280;
+        resy = 800;
+    }
 
     if (config->ispScaleF1 > 0 && config->ispScaleF2 > 0)
     {
